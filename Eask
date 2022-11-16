@@ -1,6 +1,6 @@
 (package "jcs-modeline"
          "0.1.0"
-         "modeline for jcs-emacs")
+         "A modeline for jcs-emacs")
 
 (website-url "https://github.com/jcs-emacs/jcs-modeline")
 (keywords "faces" "mode-line")
