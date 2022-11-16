@@ -31,8 +31,9 @@
 
 ;;; Code:
 
-(require 'moody)
-(require 'minions)
+(eval-when-compile
+  (require 'moody)
+  (require 'minions))
 
 (defgroup jcs-modeline nil
   "A modeline for jcs-emacs."
@@ -73,6 +74,7 @@
                       (:eval (jcs-modeline--vc-info)) " "
                       (:eval (moody-tab " %l : %c " 0 'up)) " %p "
                       mode-line-end-spaces))))))
+  (require 'moody)
   (minions-mode 1))
 
 (defun jcs-modeline--disable ()
