@@ -1,0 +1,16 @@
+(package "jcs-modeline"
+         "0.1.0"
+         "modeline for jcs-emacs")
+
+(website-url "https://github.com/jcs-emacs/jcs-modeline")
+(keywords "faces" "mode-line")
+
+(package-file "jcs-modeline.el")
+
+(source "gnu")
+(source "jcs-elpa")
+(source "melpa")
+
+(depends-on "emacs" "27.1")
+
+(setq network-security-level 'low)  ; see https://github.com/jcs090218/setup-emacs-windows/issues/156#issuecomment-932956432
