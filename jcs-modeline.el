@@ -222,4 +222,5 @@ BC : border color."
      '("#CCCCCC" "#B100EB") '("#CCCCCC" "#650286") "#B100EB")))
 
 (provide 'jcs-modeline)
+
 ;;; jcs-modeline.el ends here
