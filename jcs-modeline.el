@@ -6,7 +6,7 @@
 ;; Maintainer: Shen, Jen-Chieh <jcs090218@gmail.com>
 ;; URL: https://github.com/jcs-emacs/jcs-modeline
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "27.1") (moody "0.7.1"))
+;; Package-Requires: ((emacs "27.1") (moody "0.7.1") (minions "0.3.7"))
 ;; Keywords: faces mode-line
 
 ;; This file is not part of GNU Emacs.
@@ -32,6 +32,7 @@
 ;;; Code:
 
 (require 'moody)
+(require 'minions)
 
 (defgroup jcs-modeline nil
   "A modeline for jcs-emacs."
@@ -71,7 +72,8 @@
                                   concat (propertize lighter 'face `(:foreground ,(cdr state))))))
                       (:eval (jcs-modeline--vc-info)) " "
                       (:eval (moody-tab " %l : %c " 0 'up)) " %p "
-                      mode-line-end-spaces)))))))
+                      mode-line-end-spaces))))))
+  (minions-mode 1))
 
 (defun jcs-modeline--disable ()
   "Disable function `jcs-modeline-mode'."
