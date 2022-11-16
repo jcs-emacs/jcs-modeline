@@ -7,6 +7,14 @@
 
 [![CI](https://github.com/jcs-emacs/jcs-modeline/actions/workflows/test.yml/badge.svg)](https://github.com/jcs-emacs/jcs-modeline/actions/workflows/test.yml)
 
+## 🔨 Usage
+
+Place the following line in your config file:
+
+```elisp
+(jcs-modeline-mode 1)
+```
+
 ## Contribute
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
