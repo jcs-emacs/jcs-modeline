@@ -6,7 +6,7 @@
 ;; Maintainer: Shen, Jen-Chieh <jcs090218@gmail.com>
 ;; URL: https://github.com/jcs-emacs/jcs-modeline
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "27.1") (moody "0.7.1") (minions "0.3.7"))
+;; Package-Requires: ((emacs "27.1") (moody "0.7.1") (minions "0.3.7") (elenv "0.1.0"))
 ;; Keywords: faces mode-line
 
 ;; This file is not part of GNU Emacs.
@@ -33,12 +33,22 @@
 
 (require 'moody)
 (require 'minions)
+(require 'elenv)
 
 (defgroup jcs-modeline nil
   "A modeline for jcs-emacs."
   :prefix "jcs-modeline-"
   :group 'faces
   :link '(url-link :tag "Github" "https://github.com/jcs-emacs/jcs-modeline"))
+
+;;
+;; (@* "Externals" )
+;;
+
+(defvar flycheck-current-errors)
+(defvar flycheck-last-status-change)
+(declare-function flycheck-has-current-errors-p "ext:flycheck.el")
+(declare-function flycheck-count-errors "ext:flycheck.el")
 
 ;;
 ;; (@* "Entry" )
@@ -92,9 +102,16 @@
 ;; (@* "Util" )
 ;;
 
+(defun jcs-modeline--light-color-p (hex-code)
+  "Return non-nil if HEX-CODE is in light tone."
+  (when elenv-graphic-p
+    (let ((gray (nth 0 (color-values "gray")))
+          (color (nth 0 (color-values hex-code))))
+      (< gray color))))
+
 (defun jcs-modeline--light-theme-p ()
   "Return non-nil if current theme is light theme."
-  (ignore-errors (jcs-light-color-p (face-background 'default))))
+  (ignore-errors (jcs-modeline--light-color-p (face-background 'default))))
 
 ;;
 ;; (@* "Core" )
@@ -128,9 +145,13 @@
   "Return vc-mode information."
   (format-mode-line '(vc-mode vc-mode)))
 
+(defun jcs-modeline--project-root ()
+  "Return project directory path."
+  (when-let ((current (project-current))) (project-root current)))
+
 (defun jcs-modeline--vc-project ()
   "Return the project name."
-  (when-let ((project (jcs-project-root)))
+  (when-let ((project (jcs-modeline--project-root)))
     (file-name-nondirectory (directory-file-name project))))
 
 (defun jcs-modeline--flycheck-lighter (state)
