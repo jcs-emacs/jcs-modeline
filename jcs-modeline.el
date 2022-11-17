@@ -34,8 +34,6 @@
 (require 'moody)
 (require 'minions)
 
-
-
 (defgroup jcs-modeline nil
   "A modeline for jcs-emacs."
   :prefix "jcs-modeline-"
