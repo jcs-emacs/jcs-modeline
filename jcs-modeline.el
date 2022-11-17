@@ -31,8 +31,6 @@
 
 ;;; Code:
 
-
-
 (require 'moody)
 (require 'minions)
 
