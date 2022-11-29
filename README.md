@@ -15,6 +15,10 @@ Place the following line in your config file:
 (jcs-modeline-mode 1)
 ```
 
+## 📝 Todo List
+
+- [ ] `flymake` integration
+
 ## Contribute
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
