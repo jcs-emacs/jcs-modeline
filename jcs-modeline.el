@@ -6,7 +6,7 @@
 ;; Maintainer: Shen, Jen-Chieh <jcs090218@gmail.com>
 ;; URL: https://github.com/jcs-emacs/jcs-modeline
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "27.1") (moody "0.7.1") (minions "0.3.7") (elenv "0.1.0"))
+;; Package-Requires: ((emacs "28.1") (moody "0.7.1") (minions "0.3.7") (elenv "0.1.0"))
 ;; Keywords: faces mode-line
 
 ;; This file is not part of GNU Emacs.
@@ -200,7 +200,7 @@
 ;;
 
 (defun jcs-modeline--vc-info ()
-  "Return vc-mode information."
+  "Return `vc-mode' information."
   (format-mode-line '(vc-mode vc-mode)))
 
 (defun jcs-modeline--project-root ()
