@@ -45,6 +45,9 @@
 ;; (@* "Externals" )
 ;;
 
+(declare-function string-pixel-width "subr-x.el")   ; TODO: remove this after 29.1
+(declare-function shr-string-pixel-width "shr.el")  ; TODO: remove this after 29.1
+
 (defvar flycheck-current-errors)
 (defvar flycheck-last-status-change)
 (declare-function flycheck-has-current-errors-p "ext:flycheck.el")
@@ -102,6 +105,21 @@
 ;; (@* "Util" )
 ;;
 
+;; TODO: Use function `string-pixel-width' after 29.1
+(defun jcs-modeline--string-pixel-width (str)
+  "Return the width of STR in pixels."
+  (if (fboundp #'string-pixel-width)
+      (string-pixel-width str)
+    (require 'shr)
+    (shr-string-pixel-width str)))
+
+(defun jcs-modeline--str-len (str)
+  "Calculate STR in pixel width."
+  (let ((width (window-font-width))
+        (len (jcs-modeline--string-pixel-width str)))
+    (+ (/ len width)
+       (if (zerop (% len width)) 0 1))))  ; add one if exceeed
+
 (defun jcs-modeline--light-color-p (hex-code)
   "Return non-nil if HEX-CODE is in light tone."
   (when elenv-graphic-p
@@ -129,8 +147,8 @@
 
 (defun jcs-modeline-render (left right)
   "Render mode line with LEFT and RIGHT alignment."
-  (let* ((len-left (length (format-mode-line left)))
-         (len-right (length (format-mode-line right)))
+  (let* ((len-left (jcs-modeline--str-len (format-mode-line left)))
+         (len-right (jcs-modeline--str-len (format-mode-line right)))
          (available-width (- (window-width) (+ len-left len-right)))
          (available-width (+ available-width (jcs-modeline--adjust-pad))))
     (append left
