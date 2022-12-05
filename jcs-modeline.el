@@ -55,16 +55,8 @@
   :group 'jcs-modeline)
 
 (defcustom jcs-modeline-right
-  `((:eval
-     (when (and (bound-and-true-p flycheck-mode)
-                (or flycheck-current-errors
-                    (eq 'running flycheck-last-status-change)))
-       (cl-loop for state in '((error   . "#FB4933")
-                               (warning . "#FABD2F")
-                               (info    . "#83A598"))
-                as lighter = (jcs-modeline--flycheck-lighter (car state))
-                when lighter
-                concat (propertize lighter 'face `(:foreground ,(cdr state))))))
+  `((:eval (jcs-modeline--render-flycheck))
+    (:eval (jcs-modeline--render-nov))
     (:eval (jcs-modeline--vc-info)) " "
     (:eval (moody-tab " %l : %c " 0 'up)) " %p "
     mode-line-end-spaces)
@@ -199,6 +191,9 @@
 ;; (@* "Plugins" )
 ;;
 
+;;
+;;; Flycheck
+
 (defun jcs-modeline--vc-info ()
   "Return `vc-mode' information."
   (format-mode-line '(vc-mode vc-mode)))
@@ -219,6 +214,26 @@
          (err (or (cdr (assq state counts)) "?"))
          (running (eq 'running flycheck-last-status-change)))
     (if (or errorp running) (format "•%s" err))))
+
+(defun jcs-modeline--render-flycheck ()
+  "Render for flycheck."
+  (when (and (bound-and-true-p flycheck-mode)
+             (or flycheck-current-errors
+                 (eq 'running flycheck-last-status-change)))
+    (cl-loop for state in '((error   . "#FB4933")
+                            (warning . "#FABD2F")
+                            (info    . "#83A598"))
+             as lighter = (jcs-modeline--flycheck-lighter (car state))
+             when lighter
+             concat (propertize lighter 'face `(:foreground ,(cdr state))))))
+
+;;
+;;; Nov
+
+(defun jcs-modeline--render-nov ()
+  "Render for nov."
+  (when (eq major-mode 'nov-mode)
+    (format "[%s/%s]" (1+ nov-documents-index) (length nov-documents))))
 
 ;;
 ;; (@* "Themes" )
