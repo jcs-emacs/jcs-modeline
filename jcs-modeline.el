@@ -58,6 +58,7 @@
   `((:eval (jcs-modeline--render-flycheck))
     (:eval (jcs-modeline--render-nov))
     (:eval (jcs-modeline--vc-info)) " "
+    (:eval (jcs-modeline--render-text-scale))
     (:eval (moody-tab " %l : %c " 0 'up)) " %p "
     mode-line-end-spaces)
   "List of item to render on the right."
@@ -124,7 +125,7 @@
 
 (defun jcs-modeline--str-len (str)
   "Calculate STR in pixel width."
-  (let ((width (window-font-width))
+  (let ((width (window-font-width (minibuffer-window)))
         (len (jcs-modeline--string-pixel-width str)))
     (+ (/ len width)
        (if (zerop (% len width)) 0 1))))  ; add one if exceeed
@@ -190,6 +191,18 @@
 ;;
 ;; (@* "Plugins" )
 ;;
+
+;;
+;;; Text Scale
+
+(defun jcs-modeline--render-text-scale ()
+  "Render text-scale amount."
+  (when (and (boundp 'text-scale-mode-amount) (/= text-scale-mode-amount 0))
+    (format
+     (if (> text-scale-mode-amount 0)
+         "(%+d)"
+       "(%-d)")
+     text-scale-mode-amount)))
 
 ;;
 ;;; Flycheck
