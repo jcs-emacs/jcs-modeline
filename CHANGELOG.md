@@ -11,6 +11,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Handle unicode characters (b9e8ab40dda69a8fc5c7e0bfe9524471b50635ad)
 * Implement a smarter mode-line display (a99e03f570f6439f48e2fd8cc72afdfba83a08f7)
 * Add support for `nov` (10ca349c414abe6c9f602faabafc4ba4dbd19bde)
+* Add `text-scale` segment (743e9c60d25c5558222f62a3135c7428ed393209)
+* Fix alignment issue when text-scale amount is not zero (c46a95f1a09e8b209b4f2f80af5a882904cb94c9)
 
 ## 0.1.0
 > Released Nov 16, 2022
