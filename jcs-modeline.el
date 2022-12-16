@@ -125,7 +125,7 @@
 
 (defun jcs-modeline--str-len (str)
   "Calculate STR in pixel width."
-  (let ((width (window-font-width (minibuffer-window)))
+  (let ((width (frame-char-width))
         (len (jcs-modeline--string-pixel-width str)))
     (+ (/ len width)
        (if (zerop (% len width)) 0 1))))  ; add one if exceeed
@@ -242,6 +242,9 @@
 
 ;;
 ;;; Nov
+
+(defvar nov-documents)
+(defvar nov-documents-index)
 
 (defun jcs-modeline--render-nov ()
   "Render for nov."
