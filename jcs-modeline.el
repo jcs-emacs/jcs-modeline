@@ -44,7 +44,7 @@
 (defcustom jcs-modeline-left
   `("%e "
     mode-line-front-space
-    mode-line-buffer-identification " "
+    (:eval (jcs-modeline--buffer-identification)) " "
     (:eval (moody-tab (concat " " (format-mode-line
                                    (if minions-mode
                                        minions-mode-line-modes
@@ -191,6 +191,13 @@
 ;;
 ;; (@* "Plugins" )
 ;;
+
+;;
+;;; Buffe Identification
+
+(defun jcs-modeline--buffer-identification ()
+  "Render buffer identification."
+  (string-trim (format-mode-line mode-line-buffer-identification)))
 
 ;;
 ;;; Text Scale
