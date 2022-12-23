@@ -166,22 +166,29 @@
         (right-list (reverse jcs-modeline-right)))
     (setq jcs-modeline--render-left nil
           jcs-modeline--render-right nil)  ; reset
+    ;; Loop through the entire `left' + `right' list
     (while (< count (length (append jcs-modeline-left jcs-modeline-right)))
-      (when (or (and is-left (<= (length jcs-modeline-left) left-index))
-                (and (not is-left) (<= (length jcs-modeline-right) right-index)))
+      ;; Check if the index exceed it's length, then flip the left/right
+      ;; toggle variable `is-left' to ensure we iterate through the whole
+      ;; render list!
+      (when (<= (length (if is-left jcs-modeline-left jcs-modeline-right))
+                (if is-left left-index right-index))
         (setq is-left (not is-left)))
+      ;; Select the item, check the length and add it to the render list!
       (let* ((item (nth (if is-left left-index right-index)
                         (if is-left jcs-modeline-left right-list)))
              (format (format-mode-line item))
              (width (jcs-modeline--str-len format))
              (new-width (+ current-width width)))
-        (when (<= new-width (window-width))
-          (setq current-width new-width)
+        ;; Can the new item added to the list?
+        (when (<= new-width (window-width))  ; can be displayed properly!
+          (setq current-width new-width)  ; update string/display width
+          ;; Add the item to render list!
           (push item (if is-left jcs-modeline--render-left
                        jcs-modeline--render-right))))
-      (cl-incf (if is-left left-index right-index))
+      (cl-incf (if is-left left-index right-index))  ; increment index
       (cl-incf count)
-      (setq is-left (not is-left))))
+      (setq is-left (not is-left))))  ; flip `left' and `right'
   (setq jcs-modeline--render-left (reverse jcs-modeline--render-left)
         ;; Since we iterate it from the edge, we don't need to reverse the right
         jcs-modeline--render-right jcs-modeline--render-right))
