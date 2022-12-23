@@ -17,7 +17,7 @@ Place the following line in your config file:
 
 ## 📝 Todo List
 
-- [ ] `flymake` integration
+- [x] `flymake` integration
 
 ## Contribute
 

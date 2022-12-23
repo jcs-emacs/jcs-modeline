@@ -31,6 +31,9 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+(require 'subr-x)
+
 (require 'moody)
 (require 'minions)
 (require 'elenv)
@@ -52,10 +55,11 @@
   :group 'jcs-modeline)
 
 (defcustom jcs-modeline-right
-  `((:eval (jcs-modeline--render-flycheck))
-    (:eval (jcs-modeline--render-nov))
-    (:eval (jcs-modeline--render-vc-info))
+  `((:eval (jcs-modeline--render-nov))
     (:eval (jcs-modeline--render-text-scale))
+    (:eval (jcs-modeline--render-flymake))
+    (:eval (jcs-modeline--render-flycheck))
+    (:eval (jcs-modeline--render-vc-info))
     (:eval (moody-tab " %l : %c " 0 'up)) " %p"
     mode-line-end-spaces)
   "List of item to render on the right."
@@ -68,6 +72,13 @@
 
 (declare-function string-pixel-width "subr-x.el")   ; TODO: remove this after 29.1
 (declare-function shr-string-pixel-width "shr.el")  ; TODO: remove this after 29.1
+
+(defvar flymake--state)
+(declare-function flymake-running-backends "ext:flymake.el")
+(declare-function flymake-disabled-backends "ext:flymake.el")
+(declare-function flymake-reporting-backends "ext:flymake.el")
+(declare-function flymake--diag-type "ext:flymake.el")
+(declare-function flymake--state-diags "ext:flymake.el")
 
 (defvar flycheck-current-errors)
 (defvar flycheck-last-status-change)
@@ -148,23 +159,29 @@
 
 (defun jcs-modeline--window-resize (&rest _)
   "Window resize hook."
-  (let ((count 0) (index 0) (current-width 0)
+  (let ((count 0) (current-width 0)
+        (is-left t)
+        (left-index 0) (right-index 0)
         ;; Let's iterate it from outer to inner, so we must flip the right list.
         (right-list (reverse jcs-modeline-right)))
     (setq jcs-modeline--render-left nil
           jcs-modeline--render-right nil)  ; reset
     (while (< count (length (append jcs-modeline-left jcs-modeline-right)))
-      (let* ((odd (= (% count 2) 0))
-             (item (nth index (if odd jcs-modeline-left right-list)))
+      (when (or (and is-left (<= (length jcs-modeline-left) left-index))
+                (and (not is-left) (<= (length jcs-modeline-right) right-index)))
+        (setq is-left (not is-left)))
+      (let* ((item (nth (if is-left left-index right-index)
+                        (if is-left jcs-modeline-left right-list)))
              (format (format-mode-line item))
              (width (jcs-modeline--str-len format))
              (new-width (+ current-width width)))
         (when (<= new-width (window-width))
           (setq current-width new-width)
-          (push item (if odd jcs-modeline--render-left
+          (push item (if is-left jcs-modeline--render-left
                        jcs-modeline--render-right))))
-      (setq count (1+ count)
-            index (/ count 2))))
+      (cl-incf (if is-left left-index right-index))
+      (cl-incf count)
+      (setq is-left (not is-left))))
   (setq jcs-modeline--render-left (reverse jcs-modeline--render-left)
         ;; Since we iterate it from the edge, we don't need to reverse the right
         jcs-modeline--render-right jcs-modeline--render-right))
@@ -240,6 +257,42 @@
      text-scale-mode-amount)))
 
 ;;
+;;; Flymake
+
+(defun jcs-modeline--render-flymake ()
+  "Render for flymake."
+  (when (bound-and-true-p flymake-mode)
+    (let* ((known (hash-table-keys flymake--state))
+           (running (flymake-running-backends))
+           (disabled (flymake-disabled-backends))
+           (reported (flymake-reporting-backends))
+           (diags-by-type (make-hash-table))
+           (all-disabled (and disabled (null running)))
+           (some-waiting (cl-set-difference running reported)))
+      (maphash (lambda (_b state)
+                 (mapc (lambda (diag)
+                         (push diag
+                               (gethash (flymake--diag-type diag)
+                                        diags-by-type)))
+                       (flymake--state-diags state)))
+               flymake--state)
+      (concat
+       (cond
+        (some-waiting (propertize "⏳" 'face `(:foreground "#FABD2F")))
+        ((null known) (propertize "⚠" 'face `(:foreground "#FABD2F")))
+        (all-disabled (propertize "⚠" 'face `(:foreground "#FB4933")))
+        (t
+         (apply #'concat
+                (mapcar (lambda (args)
+                          (apply (lambda (num str face)
+                                   (propertize (format str num) 'face face))
+                                 args))
+                        `((,(length (gethash :error diags-by-type)) "•%d " error)
+                          (,(length (gethash :warning diags-by-type)) "•%d " warning)
+                          (,(length (gethash :note diags-by-type)) "•%d" success))))))
+       " "))))
+
+;;
 ;;; Flycheck
 
 (defun jcs-modeline--flycheck-lighter (state)
@@ -255,12 +308,14 @@
   (when (and (bound-and-true-p flycheck-mode)
              (or flycheck-current-errors
                  (eq 'running flycheck-last-status-change)))
-    (cl-loop for state in '((error   . "#FB4933")
-                            (warning . "#FABD2F")
-                            (info    . "#83A598"))
-             as lighter = (jcs-modeline--flycheck-lighter (car state))
-             when lighter
-             concat (propertize lighter 'face `(:foreground ,(cdr state))))))
+    (concat
+     (cl-loop for state in '((error   . "#FB4933")
+                             (warning . "#FABD2F")
+                             (info    . "#83A598"))
+              as lighter = (jcs-modeline--flycheck-lighter (car state))
+              when lighter
+              concat (propertize lighter 'face `(:foreground ,(cdr state))))
+     " ")))
 
 ;;
 ;;; Nov
