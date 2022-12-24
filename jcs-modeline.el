@@ -306,15 +306,13 @@
   "Return flycheck information for the given error type STATE."
   (let* ((counts (flycheck-count-errors flycheck-current-errors))
          (errorp (flycheck-has-current-errors-p state))
-         (err (or (cdr (assq state counts)) "?"))
+         (err (or (cdr (assq state counts)) "0"))
          (running (eq 'running flycheck-last-status-change)))
-    (if (or errorp running) (format "•%s" err))))
+    (format "•%s" (if running "?" err))))
 
 (defun jcs-modeline--render-flycheck ()
   "Render for flycheck."
-  (when (and (bound-and-true-p flycheck-mode)
-             (or flycheck-current-errors
-                 (eq 'running flycheck-last-status-change)))
+  (when (bound-and-true-p flycheck-mode)
     (concat
      (cl-loop for state in '((error   . "#FB4933")
                              (warning . "#FABD2F")
