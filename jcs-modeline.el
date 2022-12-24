@@ -305,7 +305,6 @@
 (defun jcs-modeline--flycheck-lighter (state)
   "Return flycheck information for the given error type STATE."
   (let* ((counts (flycheck-count-errors flycheck-current-errors))
-         (errorp (flycheck-has-current-errors-p state))
          (err (or (cdr (assq state counts)) "0"))
          (running (eq 'running flycheck-last-status-change)))
     (format "•%s" (if running "?" err))))
