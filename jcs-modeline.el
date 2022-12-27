@@ -66,6 +66,13 @@
   :type 'list
   :group 'jcs-modeline)
 
+(defcustom jcs-modeline-checker-colors '((error   . "#FB4933")
+                                         (warning . "#FABD2F")
+                                         (info    . "#83A598"))
+  "Alist of colors for checkers."
+  :type 'list
+  :group 'jcs-modeline)
+
 ;;
 ;; (@* "Externals" )
 ;;
@@ -307,18 +314,20 @@
   (let* ((counts (flycheck-count-errors flycheck-current-errors))
          (err (or (cdr (assq state counts)) "0"))
          (running (eq 'running flycheck-last-status-change)))
-    (format "•%s" (if running "?" err))))
+    (format "%s" (if running "?" err))))
 
 (defun jcs-modeline--render-flycheck ()
   "Render for flycheck."
   (when (bound-and-true-p flycheck-mode)
     (concat
-     (cl-loop for state in '((error   . "#FB4933")
-                             (warning . "#FABD2F")
-                             (info    . "#83A598"))
-              as lighter = (jcs-modeline--flycheck-lighter (car state))
-              when lighter
-              concat (propertize lighter 'face `(:foreground ,(cdr state))))
+     (let ((last (caar (last jcs-modeline-checker-colors)))
+           result)
+       (dolist (state jcs-modeline-checker-colors)
+         (let* ((lighter (jcs-modeline--flycheck-lighter (car state)))
+                (lighter (propertize lighter 'face `(:foreground ,(cdr state)))))
+           (setq result (concat result lighter
+                                (unless (equal (car state) last) "/")))))
+       result)
      " ")))
 
 ;;
