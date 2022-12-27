@@ -68,7 +68,8 @@
 
 (defcustom jcs-modeline-checker-colors '((error   . "#FB4933")
                                          (warning . "#FABD2F")
-                                         (info    . "#83A598"))
+                                         (info    . "#83A598")
+                                         (note    . "#83A598"))
   "Alist of colors for checkers."
   :type 'list
   :group 'jcs-modeline)
@@ -273,6 +274,19 @@
 ;;
 ;;; Flymake
 
+(defun jcs-modeline--flymake-lighter (diags-by-type state running)
+  "Return flycheck lighter by given STATE.
+
+If argument RUNNING is non-nil, we turn lighter into question mark."
+  (let* ((c-state (cl-case state
+                    (error   :error)
+                    (warning :warning)
+                    (note    :note)))
+         (counts (length (gethash c-state diags-by-type)))
+         (color (cdr (assoc state jcs-modeline-checker-colors)))
+         (lighter (format "%s" (if running "?" counts))))
+    (propertize lighter 'face `(:foreground ,color))))
+
 (defun jcs-modeline--render-flymake ()
   "Render for flymake."
   (when (bound-and-true-p flymake-mode)
@@ -291,42 +305,43 @@
                        (flymake--state-diags state)))
                flymake--state)
       (concat
-       (cond
-        (some-waiting (propertize "⏳" 'face `(:foreground "#FABD2F")))
-        ((null known) (propertize "⚠" 'face `(:foreground "#FABD2F")))
-        (all-disabled (propertize "⚠" 'face `(:foreground "#FB4933")))
-        (t
-         (apply #'concat
-                (mapcar (lambda (args)
-                          (apply (lambda (num str face)
-                                   (propertize (format str num) 'face face))
-                                 args))
-                        `((,(length (gethash :error diags-by-type)) "•%d " error)
-                          (,(length (gethash :warning diags-by-type)) "•%d " warning)
-                          (,(length (gethash :note diags-by-type)) "•%d" success))))))
+       (let* ((states '(error warning note))
+              (last (car (last states)))
+              result)
+         (dolist (state states)
+           (when-let ((lighter (jcs-modeline--flymake-lighter
+                                diags-by-type state
+                                (or some-waiting (null known) all-disabled))))
+             (setq result (concat result lighter
+                                  (unless (equal state last) "/")))))
+         result)
        " "))))
 
 ;;
 ;;; Flycheck
 
-(defun jcs-modeline--flycheck-lighter (state)
-  "Return flycheck information for the given error type STATE."
+(defun jcs-modeline--flycheck-lighter (state running)
+  "Return flycheck lighter by given STATE.
+
+If argument RUNNING is non-nil, we turn lighter into question mark."
   (let* ((counts (flycheck-count-errors flycheck-current-errors))
          (err (or (cdr (assq state counts)) "0"))
-         (running (eq 'running flycheck-last-status-change)))
-    (format "%s" (if running "?" err))))
+         (color (cdr (assoc state jcs-modeline-checker-colors)))
+         (lighter (format "%s" (if running "?" err))))
+    (propertize lighter 'face `(:foreground ,color))))
 
 (defun jcs-modeline--render-flycheck ()
   "Render for flycheck."
   (when (bound-and-true-p flycheck-mode)
     (concat
-     (let ((last (caar (last jcs-modeline-checker-colors)))
-           result)
-       (dolist (state jcs-modeline-checker-colors)
-         (let* ((lighter (jcs-modeline--flycheck-lighter (car state)))
-                (lighter (propertize lighter 'face `(:foreground ,(cdr state)))))
+     (let* ((states '(error warning info))
+            (last (car (last states)))
+            (running (eq 'running flycheck-last-status-change))
+            result)
+       (dolist (state states)
+         (when-let ((lighter (jcs-modeline--flycheck-lighter state running)))
            (setq result (concat result lighter
-                                (unless (equal (car state) last) "/")))))
+                                (unless (equal state last) "/")))))
        result)
      " ")))
 
