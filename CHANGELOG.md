@@ -15,6 +15,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Fix alignment issue when text-scale amount is not zero (c46a95f1a09e8b209b4f2f80af5a882904cb94c9)
 * Shorten buffer identification (b645ecf9452e9bc87d5fc0649b38581b2708ff83)
 * Integrate `flymake` segment (4d36abc780d547aa07e250839b349421c60dc468)
+* Update `flycheck` lighter (559db6644036ab6bb8d806081d6dcbd40b6d3876)
+* Update `flymake` lighter (ccaeb6bb75a551bfe37f833ce32f762eea9622ef)
 
 ## 0.1.0
 > Released Nov 16, 2022
