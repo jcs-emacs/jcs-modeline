@@ -60,7 +60,8 @@
     (:eval (jcs-modeline--render-flymake))
     (:eval (jcs-modeline--render-flycheck))
     (:eval (jcs-modeline--render-vc-info))
-    (:eval (moody-tab " %l : %c " 0 'up)) " %p"
+    (:eval (jcs-modeline--render-line-columns))
+    " %p"
     mode-line-end-spaces)
   "List of item to render on the right."
   :type 'list
@@ -105,6 +106,8 @@
 
 (defun jcs-modeline--enable ()
   "Enable function `jcs-modeline-mode'."
+  (unless elenv-graphic-p
+    (advice-add 'moody-tab :override #'jcs-modeline--moody-tab))
   (add-hook 'window-size-change-functions #'jcs-modeline--window-resize)
   (jcs-modeline--window-resize)  ; call it manually once
   (setq jcs-modeline--default-mode-line mode-line-format)
@@ -115,6 +118,8 @@
 
 (defun jcs-modeline--disable ()
   "Disable function `jcs-modeline-mode'."
+  (unless elenv-graphic-p
+    (advice-remove 'moody-tab #'jcs-modeline--moody-tab))
   (remove-hook 'window-size-change-functions #'jcs-modeline--window-resize)
   (setq-default mode-line-format jcs-modeline--default-mode-line))
 
@@ -221,6 +226,10 @@
             (list (format (format "%%%ds" available-width) ""))
             right)))
 
+(defun jcs-modeline--moody-tab (arg0 &rest _)
+  "Override `moody-ta' function when inside the terminal."
+  (concat " " arg0 " "))
+
 ;;
 ;; (@* "Plugins" )
 ;;
@@ -241,6 +250,13 @@
                                              minions-mode-line-modes
                                            mode-line-modes))))
     (moody-tab line-modes)))
+
+;;
+;;; Line and Columns
+
+(defun jcs-modeline--render-line-columns ()
+  "Render current line number and column."
+  (moody-tab "%l : %c" 0 'up))
 
 ;;
 ;;; Project
