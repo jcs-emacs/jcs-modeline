@@ -83,6 +83,9 @@
 (declare-function string-pixel-width "subr-x.el")   ; TODO: remove this after 29.1
 (declare-function shr-string-pixel-width "shr.el")  ; TODO: remove this after 29.1
 
+(defvar undo-tree-visualizer-buffer-name)
+(defvar undo-tree-visualizer-parent-buffer)
+
 (defvar flymake--state)
 (declare-function flymake-running-backends "ext:flymake.el")
 (declare-function flymake-disabled-backends "ext:flymake.el")
