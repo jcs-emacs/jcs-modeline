@@ -17,6 +17,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Integrate `flymake` segment (4d36abc780d547aa07e250839b349421c60dc468)
 * Update `flycheck` lighter (559db6644036ab6bb8d806081d6dcbd40b6d3876)
 * Update `flymake` lighter (ccaeb6bb75a551bfe37f833ce32f762eea9622ef)
+* feat: Render undo-tree parent buffer name (#1)
 
 ## 0.1.0
 > Released Nov 16, 2022
