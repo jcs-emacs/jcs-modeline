@@ -49,7 +49,8 @@
     mode-line-front-space
     (:eval (jcs-modeline--render-buffer-identification))
     (:eval (jcs-modeline--render-modes))
-    (:eval (jcs-modeline--render-vc-project)))
+    (:eval (jcs-modeline--render-vc-project))
+    (:eval (jcs-modeline--render-undo-tree-buffer-name)))
   "List of item to render on the left."
   :type 'list
   :group 'jcs-modeline)
@@ -270,10 +271,16 @@
   "Return project directory path."
   (when-let ((current (project-current))) (project-root current)))
 
+(defcustom jcs-modeline-show-project-name-virutal-buffer nil
+  "If non-nil, display project-name in virutal buffer."
+  :type 'boolean
+  :group 'jcs-modeline)
+
 (defun jcs-modeline--render-vc-project ()
   "Return the project name."
-  (when-let ((project (jcs-modeline--project-root)))
-    (concat " "(file-name-nondirectory (directory-file-name project)))))
+  (when (or (buffer-file-name) jcs-modeline-show-project-name-virutal-buffer)
+    (when-let ((project (jcs-modeline--project-root)))
+      (concat " " (file-name-nondirectory (directory-file-name project))))))
 
 ;;
 ;;; Text Scale
@@ -286,6 +293,15 @@
          "(%+d) "
        "(%-d) ")
      text-scale-mode-amount)))
+
+;;
+;;; Undo
+
+(defun jcs-modeline--render-undo-tree-buffer-name ()
+  "Render text-scale amount."
+  (when (featurep 'undo-tree)
+    (cond ((equal (buffer-name) undo-tree-visualizer-buffer-name)
+           (format " %s" undo-tree-visualizer-parent-buffer)))))
 
 ;;
 ;;; Flymake
