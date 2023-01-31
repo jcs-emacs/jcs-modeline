@@ -140,6 +140,10 @@
 ;; (@* "Util" )
 ;;
 
+(defun jcs-modeline-2str (obj)
+  "Convert OBJ to string."
+  (format "%s" obj))
+
 ;; TODO: Use function `string-pixel-width' after 29.1
 (defun jcs-modeline--string-pixel-width (str)
   "Return the width of STR in pixels."
@@ -258,9 +262,17 @@
 ;;
 ;;; Line and Columns
 
+(defcustom jcs-modeline-show-point nil
+  "If non-nil, also shows point information."
+  :type 'boolean
+  :group 'jcs-modeline)
+
 (defun jcs-modeline--render-line-columns ()
   "Render current line number and column."
-  (moody-tab "%l : %c" 0 'up))
+  (moody-tab (if jcs-modeline-show-point
+                 (concat "%l %c" (format " (%s)" (point)))
+               "%l : %c")
+             0 'up))
 
 ;;
 ;;; Project
