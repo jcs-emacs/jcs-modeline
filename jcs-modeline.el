@@ -346,7 +346,7 @@
 
 (defun jcs-modeline--render-undo-tree-status ()
   "Render text-scale amount."
-  (when (and buffer-undo-tree
+  (when (and (featurep 'undo-tree) buffer-undo-tree
              (equal (buffer-name) undo-tree-visualizer-buffer-name))
     (let* ((root (undo-tree-root buffer-undo-tree))
            (node (undo-tree-current buffer-undo-tree))
