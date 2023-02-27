@@ -473,9 +473,9 @@ BC : border color."
   (interactive)
   (if (jcs-modeline--light-theme-p)
       (jcs-modeline--set-theme
-       '("#1C1C1C" "#E5E5E5") '("#000000" "#D7D7D7") "#161616")
+       '("#1C1C1C" "#E5E5E5") '("#000000" "#D7D7D7") "#989898")
     (jcs-modeline--set-theme
-     '("#D2D2D2" "#4D4D4D") '("#CCCCCC" "#333333") "#D2D2D2")))
+     '("#D2D2D2" "#4D4D4D") '("#CCCCCC" "#333333") "#7E7E7E")))
 
 (defun jcs-modeline-dark-green ()
   "Dark green mode line."
