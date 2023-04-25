@@ -1,5 +1,5 @@
 (package "jcs-modeline"
-         "0.1.0"
+         "0.1.1"
          "A modeline for jcs-emacs")
 
 (website-url "https://github.com/jcs-emacs/jcs-modeline")
