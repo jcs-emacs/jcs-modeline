@@ -275,11 +275,14 @@
                                              minions-mode-line-modes
                                            mode-line-modes)))
         (icon (and jcs-modeline-show-mode-icons
-                   (let ((icon (nerd-icons-icon-for-mode major-mode)))
-                     (concat (if (or (null icon) (symbolp icon))
-                                 (nerd-icons-faicon "nf-fa-file_o")
-                               icon)
-                             " ")))))
+                   (let* ((icon (nerd-icons-icon-for-mode major-mode))
+                          (icon (if (or (null icon) (symbolp icon))
+                                    (nerd-icons-faicon "nf-fa-file_o")
+                                  icon)))
+                     (if (and icon
+                              (char-displayable-p (string-to-char icon)))
+                         (concat icon " ")
+                       "")))))
     (moody-tab (concat icon line-modes))))
 
 ;;
