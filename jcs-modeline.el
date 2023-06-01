@@ -275,7 +275,7 @@
                                              minions-mode-line-modes
                                            mode-line-modes)))
         (icon (and jcs-modeline-show-mode-icons
-                   (let* ((icon (nerd-icons-icon-for-mode major-mode))
+                   (let* ((icon (nerd-icons-icon-for-buffer))
                           (icon (if (or (null icon) (symbolp icon))
                                     (nerd-icons-faicon "nf-fa-file_o")
                                   icon)))
