@@ -8,7 +8,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## 0.1.2 (Unreleased)
 > Released N/A
 
-* N/A
+* Use for buffer instead to fix `nerd-icons` (12cbebb882ff88969ae9273c49cd0ce46c0f6b2f)
 
 ## 0.1.1
 > Released Jan 31, 2023
