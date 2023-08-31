@@ -156,6 +156,14 @@
   "Convert OBJ to string."
   (format "%s" obj))
 
+(defun jcs-modeline--char-displayable-p (str-or-char)
+  "Check if STR-OR-CHAR is displayable."
+  (when-let* ((char (if (stringp str-or-char)
+                        (string-to-char str-or-char)
+                      str-or-char))
+              ((char-displayable-p char)))
+    str-or-char))
+
 ;; TODO: Use function `string-pixel-width' after 29.1
 (defun jcs-modeline--string-pixel-width (str)
   "Return the width of STR in pixels."
@@ -259,7 +267,11 @@
 
 (defun jcs-modeline--render-buffer-identification ()
   "Render buffer identification."
-  (concat (jcs-modeline-format mode-line-buffer-identification) " "))
+  (concat (if buffer-read-only
+              (or (jcs-modeline--char-displayable-p "🔒 ")
+                  "%% ")
+            "")
+          (jcs-modeline-format mode-line-buffer-identification) " "))
 
 ;;
 ;;; Modes
@@ -280,7 +292,7 @@
                                     (nerd-icons-faicon "nf-fa-file_o")
                                   icon)))
                      (if (and icon
-                              (char-displayable-p (string-to-char icon)))
+                              (jcs-modeline--char-displayable-p icon))
                          (concat icon " ")
                        "")))))
     (moody-tab (concat icon line-modes))))
