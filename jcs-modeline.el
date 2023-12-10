@@ -59,6 +59,7 @@
 
 (defcustom jcs-modeline-right
   `((:eval (jcs-modeline--render-nov))
+    (:eval (jcs-modeline--render-csv))
     (:eval (jcs-modeline--render-text-scale))
     (:eval (jcs-modeline--render-flymake))
     (:eval (jcs-modeline--render-flycheck))
@@ -458,6 +459,16 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
                                 (unless (equal state last) "/")))))
        result)
      " ")))
+
+;;
+;;; CSV
+
+(defvar csv-mode-line-format)
+
+(defun jcs-modeline--render-csv ()
+  "Render for `csv-mode'."
+  (when (eq major-mode 'csv-mode)
+    (concat (format-mode-line csv-mode-line-format) " ")))
 
 ;;
 ;;; Nov
