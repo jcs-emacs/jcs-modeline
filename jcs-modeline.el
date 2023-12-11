@@ -467,7 +467,7 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
 
 (defun jcs-modeline--render-csv ()
   "Render for `csv-mode'."
-  (when (eq major-mode 'csv-mode)
+  (when (memq major-mode '(csv-mode tsv-mode))
     (concat (format-mode-line csv-mode-line-format) " ")))
 
 ;;
