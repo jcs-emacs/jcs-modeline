@@ -424,15 +424,21 @@ mouse-1: Reveal project in folder" project)
               (backend-icon (if (jcs-modeline--char-displayable-p backend-icon)
                                 backend-icon
                               ""))
-              (branch (or (vc-git--symbolic-ref bfn) "")))
+              (branch (or (vc-git--symbolic-ref bfn) ""))
+              (separator (if (and backend-icon
+                                  (not (string-empty-p backend-icon)))
+                             " "
+                           ""))
+              (tip (jcs-modeline-2str backend)))
     (concat (propertize backend-icon
                         'mouse-face 'mode-line-highlight
-                        'help-echo (jcs-modeline-2str backend))
-            (if (and backend-icon (not (string-empty-p backend-icon))) " " "")
-            (propertize branch
+                        'help-echo tip)
+            (propertize (concat
+                         separator
+                         branch)
                         'face 'jcs-modeline-vc-face
                         'mouse-face 'mode-line-highlight
-                        'help-echo branch)
+                        'help-echo tip)
             " ")))
 
 ;;
