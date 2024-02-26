@@ -10,6 +10,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 * Use for buffer instead to fix `nerd-icons` (12cbebb882ff88969ae9273c49cd0ce46c0f6b2f)
 * Add mosue click for mode name and project separators (e6c122346fdf44beffc0445aebe1c6e46e8d7806)
+  Use vc icons instead (50ca0c29c0837e46fd874cd7caa6606ce3e94ffb)
 
 ## 0.1.1
 > Released Jan 31, 2023
