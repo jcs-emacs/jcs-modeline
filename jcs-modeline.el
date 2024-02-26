@@ -388,15 +388,28 @@ mouse-1: Reveal project in folder" project)
 ;;
 ;;; Version Control
 
+(defcustom jcs-modeline-vc-unknown-icon
+  (ignore-errors
+    (nerd-icons-codicon "nf-cod-workspace_unknown" :face 'jcs-modeline-vc-face))
+  "The default unknown VC icon."
+  :type 'string
+  :group 'jcs-modeline)
+
+(defface jcs-modeline-vc-face
+  '((t :foreground "#9BBC6D"))
+  "Face to use for VC."
+  :group 'jcs-modeline)
+
 (defcustom jcs-modeline-vc-backends
-  `((RCS  . ,(ignore-errors (nerd-icons-codicon "nf-cod-workspace_unknown")))
-    (CVS  . ,(ignore-errors (nerd-icons-codicon "nf-cod-workspace_unknown")))
-    (SVN  . ,(ignore-errors (nerd-icons-codicon "nf-cod-workspace_unknown")))
-    (SCCS . ,(ignore-errors (nerd-icons-codicon "nf-cod-workspace_unknown")))
-    (SRC  . ,(ignore-errors (nerd-icons-codicon "nf-cod-workspace_unknown")))
-    (Bzr  . ,(ignore-errors (nerd-icons-codicon "nf-cod-workspace_unknown")))
-    (Git  . ,(ignore-errors (nerd-icons-devicon "nf-dev-git_branch")))
-    (Hg   . ,(ignore-errors (nerd-icons-codicon "nf-cod-workspace_unknown"))))
+  `((RCS  . ,jcs-modeline-vc-unknown-icon)
+    (CVS  . ,jcs-modeline-vc-unknown-icon)
+    (SVN  . ,jcs-modeline-vc-unknown-icon)
+    (SCCS . ,jcs-modeline-vc-unknown-icon)
+    (SRC  . ,jcs-modeline-vc-unknown-icon)
+    (Bzr  . ,jcs-modeline-vc-unknown-icon)
+    (Git  . ,(ignore-errors
+               (nerd-icons-devicon "nf-dev-git_branch" :face 'jcs-modeline-vc-face)))
+    (Hg   . ,jcs-modeline-vc-unknown-icon))
   "Alist of vc backends to icon."
   :type 'list
   :group 'jcs-modeline)
@@ -408,12 +421,16 @@ mouse-1: Reveal project in folder" project)
   (when-let* ((bfn (buffer-file-name))
               (backend (vc-backend bfn))
               (backend-icon (alist-get backend jcs-modeline-vc-backends))
+              (backend-icon (if (jcs-modeline--char-displayable-p backend-icon)
+                                backend-icon
+                              ""))
               (branch (or (vc-git--symbolic-ref bfn) "")))
     (concat (propertize backend-icon
                         'mouse-face 'mode-line-highlight
                         'help-echo (jcs-modeline-2str backend))
-            (if backend-icon " " "")
+            (if (and backend-icon (not (string-empty-p backend-icon))) " " "")
             (propertize branch
+                        'face 'jcs-modeline-vc-face
                         'mouse-face 'mode-line-highlight
                         'help-echo branch)
             " ")))
