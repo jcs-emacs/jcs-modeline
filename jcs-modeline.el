@@ -65,7 +65,7 @@
     (:eval (jcs-modeline--render-flycheck))
     (:eval (jcs-modeline--render-vc-info))
     (:eval (jcs-modeline--render-line-columns))
-    " %p"
+    (:eval (jcs-modeline--render-percent-position))
     mode-line-end-spaces)
   "List of item to render on the right."
   :type 'list
@@ -307,7 +307,8 @@
     (moody-tab
      (propertize ind
                  'mouse-face 'mode-line-highlight
-                 'help-echo "mouse-1: Toggle display of major mode name"
+                 'help-echo "Major and minor modes
+mouse-1: Toggle display of major mode name"
                  'local-map (let ((map (make-sparse-keymap)))
                               (define-key map (vector 'mode-line 'mouse-1)
                                           (lambda (&rest _)
@@ -327,18 +328,33 @@
 
 (defun jcs-modeline--render-line-columns ()
   "Render current line number and column."
-  (moody-tab (if jcs-modeline-show-point
-                 (concat "%l %c" (format " (%s)" (point)))
-               "%l : %c")
-             0 'up))
+  (let* ((ind-line (propertize (jcs-modeline-format "%l")
+                               'mouse-face 'moody-mode-line-height
+                               'help-echo "Line"))
+         (ind-column (propertize (jcs-modeline-format "%c")
+                                 'mouse-face 'moody-mode-line-height
+                                 'help-echo "Column"))
+         (ind-point (concat "("
+                            (propertize (jcs-modeline-2str (point))
+                                        'mouse-face 'moody-mode-line-height
+                                        'help-echo "Point")
+                            ")"))
+         (lst (if jcs-modeline-show-point
+                  (list ind-line ind-column ind-point)
+                (list ind-line ind-column))))
+    (moody-tab (mapconcat #'identity lst " ") 0 'up)))
+
+;;
+;;; Scroll
+
+(defun jcs-modeline--render-percent-position ()
+  "Render current scroll."
+  (concat " " (propertize "%p"
+                          'mouse-face 'moody-mode-line-height
+                          'help-echo "Percent position")))
 
 ;;
 ;;; Project
-
-(defun jcs-modeline--render-vc-info ()
-  "Return `vc-mode' information."
-  (when-let ((info (jcs-modeline-format '(vc-mode vc-mode))))
-    (unless (string-empty-p info) (concat info " "))))
 
 (defun jcs-modeline--project-root ()
   "Return project directory path."
@@ -358,7 +374,9 @@
      " "
      (propertize ind
                  'mouse-face 'mode-line-highlight
-                 'help-echo (format "%s\n\nmouse-1: Reveal project in folder" project)
+                 'help-echo (format "Project Name
+path: %s
+mouse-1: Reveal project in folder" project)
                  'local-map
                  (let ((map (make-sparse-keymap)))
                    (define-key map (vector 'mode-line 'mouse-2)
@@ -368,16 +386,51 @@
                    map)))))
 
 ;;
+;;; Version Control
+
+(defcustom jcs-modeline-vc-backends
+  `((RCS  . ,(ignore-errors (nerd-icons-codicon "nf-cod-workspace_unknown")))
+    (CVS  . ,(ignore-errors (nerd-icons-codicon "nf-cod-workspace_unknown")))
+    (SVN  . ,(ignore-errors (nerd-icons-codicon "nf-cod-workspace_unknown")))
+    (SCCS . ,(ignore-errors (nerd-icons-codicon "nf-cod-workspace_unknown")))
+    (SRC  . ,(ignore-errors (nerd-icons-codicon "nf-cod-workspace_unknown")))
+    (Bzr  . ,(ignore-errors (nerd-icons-codicon "nf-cod-workspace_unknown")))
+    (Git  . ,(ignore-errors (nerd-icons-devicon "nf-dev-git_branch")))
+    (Hg   . ,(ignore-errors (nerd-icons-codicon "nf-cod-workspace_unknown"))))
+  "Alist of vc backends to icon."
+  :type 'list
+  :group 'jcs-modeline)
+
+(defun jcs-modeline--render-vc-info ()
+  "Return `vc-mode' information."
+  (when-let* ((bfn (buffer-file-name))
+              (backend (vc-backend bfn))
+              (backend-icon (alist-get backend jcs-modeline-vc-backends))
+              (branch (or (vc-git--symbolic-ref bfn) "")))
+    (concat (propertize backend-icon
+                        'mouse-face 'mode-line-highlight
+                        'help-echo (jcs-modeline-2str backend))
+            (if backend-icon " " "")
+            (propertize branch
+                        'mouse-face 'mode-line-highlight
+                        'help-echo branch)
+            " ")))
+
+;;
 ;;; Text Scale
+
+(defvar text-scale-mode-amount)
 
 (defun jcs-modeline--render-text-scale ()
   "Render text-scale amount."
-  (when (and (boundp 'text-scale-mode-amount) (/= text-scale-mode-amount 0))
-    (format
-     (if (> text-scale-mode-amount 0)
-         "(%+d) "
-       "(%-d) ")
-     text-scale-mode-amount)))
+  (when-let (((and (boundp 'text-scale-mode-amount) (/= text-scale-mode-amount 0)))
+             (ind (format (if (> text-scale-mode-amount 0)
+                              "%+d"
+                            "%-d")
+                          text-scale-mode-amount)))
+    (format "(%s) " (propertize ind
+                                'mouse-face 'mode-line-highlight
+                                'help-echo (concat "Text scale " ind)))))
 
 ;;
 ;;; Undo
