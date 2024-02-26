@@ -9,14 +9,15 @@
 
 (script "test" "echo \"Error: no test specified\" && exit 1")
 
-(source "gnu")
-(source "jcs-elpa")
-(source "melpa")
+(source 'gnu)
+(source 'jcs-elpa)
+(source 'melpa)
 
 (depends-on "emacs" "27.1")
 (depends-on "elenv")
 (depends-on "moody")
 (depends-on "minions")
 (depends-on "nerd-icons")
+(depends-on "reveal-in-folder")
 
 (setq network-security-level 'low)  ; see https://github.com/jcs090218/setup-emacs-windows/issues/156#issuecomment-932956432

@@ -6,7 +6,7 @@
 ;; Maintainer: Shen, Jen-Chieh <jcs090218@gmail.com>
 ;; URL: https://github.com/jcs-emacs/jcs-modeline
 ;; Version: 0.1.1
-;; Package-Requires: ((emacs "28.1") (moody "0.7.1") (minions "0.3.7") (elenv "0.1.0") (nerd-icons "0.0.1"))
+;; Package-Requires: ((emacs "28.1") (moody "0.7.1") (minions "0.3.7") (elenv "0.1.0") (nerd-icons "0.0.1") (reveal-in-folder "0.1.2"))
 ;; Keywords: faces mode-line
 
 ;; This file is not part of GNU Emacs.
@@ -283,21 +283,39 @@
   :type 'boolean
   :group 'jcs-modeline)
 
+(defcustom jcs-modeline-show-mode-name t
+  "Non-nil to display mode name."
+  :type 'boolean
+  :group 'jcs-modeline)
+
 (defun jcs-modeline--render-modes ()
   "Render line modes."
-  (let ((line-modes (jcs-modeline-format (if minions-mode
-                                             minions-mode-line-modes
-                                           mode-line-modes)))
-        (icon (and jcs-modeline-show-mode-icons
-                   (let* ((icon (nerd-icons-icon-for-buffer))
-                          (icon (if (or (null icon) (symbolp icon))
-                                    (nerd-icons-faicon "nf-fa-file_o")
-                                  icon)))
-                     (if (and icon
-                              (jcs-modeline--char-displayable-p icon))
-                         (concat icon " ")
-                       "")))))
-    (moody-tab (concat icon line-modes))))
+  (let* ((icon (and jcs-modeline-show-mode-icons
+                    (when-let* ((icon (nerd-icons-icon-for-buffer))
+                                (icon (if (or (null icon) (symbolp icon))
+                                          (nerd-icons-faicon "nf-fa-file_o")
+                                        icon))
+                                ((jcs-modeline--char-displayable-p icon)))
+                      icon)))
+         (line-modes (and (or jcs-modeline-show-mode-name
+                              (null icon))
+                          (jcs-modeline-format (if minions-mode
+                                                   minions-mode-line-modes
+                                                 mode-line-modes))))
+         (lst (cl-remove-if #'null (list icon line-modes)))
+         (ind (mapconcat #'identity lst " ")))
+    (moody-tab
+     (propertize ind
+                 'mouse-face 'mode-line-highlight
+                 'help-echo "mouse-1: Toggle display of major mode name"
+                 'local-map (let ((map (make-sparse-keymap)))
+                              (define-key map (vector 'mode-line 'mouse-1)
+                                          (lambda (&rest _)
+                                            (interactive)
+                                            (setq jcs-modeline-show-mode-name
+                                                  (not jcs-modeline-show-mode-name))
+                                            (force-mode-line-update t)))
+                              map)))))
 
 ;;
 ;;; Line and Columns
@@ -333,9 +351,21 @@
 
 (defun jcs-modeline--render-vc-project ()
   "Return the project name."
-  (when (or (buffer-file-name) jcs-modeline-show-project-name-virutal-buffer)
-    (when-let ((project (jcs-modeline--project-root)))
-      (concat " " (file-name-nondirectory (directory-file-name project))))))
+  (when-let* (((or (buffer-file-name) jcs-modeline-show-project-name-virutal-buffer))
+              (project (jcs-modeline--project-root))
+              (ind (file-name-nondirectory (directory-file-name project))))
+    (concat
+     " "
+     (propertize ind
+                 'mouse-face 'mode-line-highlight
+                 'help-echo (format "%s\n\nmouse-1: Reveal project in folder" project)
+                 'local-map
+                 (let ((map (make-sparse-keymap)))
+                   (define-key map (vector 'mode-line 'mouse-2)
+                               (lambda (&rest _)
+                                 (interactive)
+                                 (reveal-in-folder-open project)))
+                   map)))))
 
 ;;
 ;;; Text Scale
