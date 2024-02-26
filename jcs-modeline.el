@@ -401,6 +401,8 @@ mouse-1: Reveal project in folder" project)
   :type 'list
   :group 'jcs-modeline)
 
+(declare-function vc-git--symbolic-ref "vc-git.el")
+
 (defun jcs-modeline--render-vc-info ()
   "Return `vc-mode' information."
   (when-let* ((bfn (buffer-file-name))
