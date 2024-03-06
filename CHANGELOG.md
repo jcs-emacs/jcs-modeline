@@ -12,6 +12,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Add mosue click for mode name and project separators (e6c122346fdf44beffc0445aebe1c6e46e8d7806)
 * Use vc icons instead (50ca0c29c0837e46fd874cd7caa6606ce3e94ffb)
 * feat: Colored VC segment (7c1559c4da0202e7db18e782c8124f90e17de36a)
+* feat: Add front and end spaces (cfbf3eec6c23a4d41a45a6ac60218868de2c1e2b)
 
 ## 0.1.1
 > Released Jan 31, 2023
