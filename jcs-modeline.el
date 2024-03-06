@@ -537,7 +537,9 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
                                 (or some-waiting (null known) all-disabled))))
              (setq result (concat result lighter
                                   (unless (equal state last) "/")))))
-         result)
+         (propertize result
+                     'mouse-face 'mode-line-highlight
+                     'help-echo "flymake"))
        " "))))
 
 ;;
@@ -565,7 +567,9 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
          (when-let ((lighter (jcs-modeline--flycheck-lighter state running)))
            (setq result (concat result lighter
                                 (unless (equal state last) "/")))))
-       result)
+       (propertize result
+                   'mouse-face 'mode-line-highlight
+                   'help-echo "flycheck"))
      " ")))
 
 ;;
