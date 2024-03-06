@@ -12,7 +12,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Add mosue click for mode name and project separators (e6c122346fdf44beffc0445aebe1c6e46e8d7806)
 * Use vc icons instead (50ca0c29c0837e46fd874cd7caa6606ce3e94ffb)
 * feat: Colored VC segment (7c1559c4da0202e7db18e782c8124f90e17de36a)
-* Highlight `flycheck` and `flymake` plugins (be2535a2880b908584642ac9e8dc9da087573c84)
+* feat: Add mouse support `flycheck` and `flymake` plugins (be2535a2880b908584642ac9e8dc9da087573c84)
+* feat: Add mouse support for `nov`, `csv`, and `undo-tree` (3f32fd2fbaa767e6b7c2f33fb21b6c81f32a4f32)
 * feat: Add front and end spaces (cfbf3eec6c23a4d41a45a6ac60218868de2c1e2b)
 
 ## 0.1.1
