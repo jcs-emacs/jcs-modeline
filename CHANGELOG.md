@@ -15,6 +15,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * feat: Add mouse support `flycheck` and `flymake` plugins (be2535a2880b908584642ac9e8dc9da087573c84)
 * feat: Add mouse support for `nov`, `csv`, and `undo-tree` (3f32fd2fbaa767e6b7c2f33fb21b6c81f32a4f32)
 * feat: Add front and end spaces (cfbf3eec6c23a4d41a45a6ac60218868de2c1e2b)
+* fix: Handle the variable `mode-line-process` (aafa3eaaa07104f04bf50edec003dfe8d89d755f)
 
 ## 0.1.1
 > Released Jan 31, 2023
