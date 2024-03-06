@@ -50,8 +50,7 @@
     (:eval (jcs-modeline--render-buffer-identification))
     (:eval (jcs-modeline--render-modes))
     (:eval (jcs-modeline--render-vc-project))
-    (:eval (jcs-modeline--render-undo-tree-buffer-name))
-    (:eval (jcs-modeline--render-undo-tree-status)))
+    (:eval mode-line-process))
   "List of item to render on the left."
   :type 'list
   :group 'jcs-modeline)
@@ -62,6 +61,8 @@
     (:eval (jcs-modeline--render-text-scale))
     (:eval (jcs-modeline--render-flymake))
     (:eval (jcs-modeline--render-flycheck))
+    (:eval (jcs-modeline--render-undo-tree-buffer-name))
+    (:eval (jcs-modeline--render-undo-tree-status))
     (:eval (jcs-modeline--render-vc-info))
     (:eval (jcs-modeline--render-line-columns))
     (:eval (jcs-modeline--render-percent-position))
@@ -473,9 +474,13 @@ mouse-1: Reveal project in folder" project)
 
 (defun jcs-modeline--render-undo-tree-buffer-name ()
   "Render text-scale amount."
-  (when (featurep 'undo-tree)
-    (cond ((equal (buffer-name) undo-tree-visualizer-buffer-name)
-           (format " %s" undo-tree-visualizer-parent-buffer)))))
+  (when-let (((featurep 'undo-tree))
+             ((equal (buffer-name) undo-tree-visualizer-buffer-name))
+             (ind (buffer-name undo-tree-visualizer-parent-buffer)))
+    (concat " "
+            (propertize ind
+                        'mouse-face 'mode-line-highlight
+                        'help-echo "UndoTree Parent Buffer"))))
 
 (defun jcs-modeline--undo-tree-branch-height (root)
   "Return the total height of the current branch."
