@@ -281,7 +281,7 @@
   "Render buffer identification."
   (concat (if buffer-read-only
               (or (jcs-modeline--char-displayable-p "🔒 ")
-                  "%+ ")
+                  "&L ")
             "")
           (jcs-modeline-format mode-line-buffer-identification)
           " "))
