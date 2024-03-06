@@ -483,16 +483,36 @@ mouse-1: Reveal project in folder" project)
 
 (defun jcs-modeline--render-undo-tree-status ()
   "Render text-scale amount."
-  (when (and (featurep 'undo-tree) buffer-undo-tree
-             (equal (buffer-name) undo-tree-visualizer-buffer-name))
-    (let* ((root (undo-tree-root buffer-undo-tree))
-           (node (undo-tree-current buffer-undo-tree))
-           (timestamp (undo-tree-node-timestamp node)))
-      (format " %s/%s/%s (%s) %s" (jcs-modeline--undo-tree-height node)
-              (jcs-modeline--undo-tree-branch-height root)
-              (undo-tree-count buffer-undo-tree)
-              (undo-tree-size buffer-undo-tree)
-              (string-trim (undo-tree-timestamp-to-string timestamp))))))
+  (when-let* (((and (featurep 'undo-tree) buffer-undo-tree
+                    (equal (buffer-name) undo-tree-visualizer-buffer-name)))
+              (root (undo-tree-root buffer-undo-tree))
+              (node (undo-tree-current buffer-undo-tree))
+              (timestamp (undo-tree-node-timestamp node))
+              (tree-height (jcs-modeline--undo-tree-height node))
+              (tree-branch-height (jcs-modeline--undo-tree-branch-height root))
+              (tree-count (undo-tree-count buffer-undo-tree))
+              (tree-size (undo-tree-size buffer-undo-tree))
+              (timestamp (string-trim (undo-tree-timestamp-to-string timestamp))))
+    (concat " "
+            (propertize (jcs-modeline-2str tree-height)
+                        'mouse-face 'mode-line-highlight
+                        'help-echo "UndoTree Height")
+            "/"
+            (propertize (jcs-modeline-2str tree-branch-height)
+                        'mouse-face 'mode-line-highlight
+                        'help-echo "UndoTree Branch Height")
+            "/"
+            (propertize (jcs-modeline-2str tree-count)
+                        'mouse-face 'mode-line-highlight
+                        'help-echo "UndoTree Count")
+            " ("
+            (propertize (jcs-modeline-2str tree-size)
+                        'mouse-face 'mode-line-highlight
+                        'help-echo "UndoTree Size")
+            ") "
+            (propertize (jcs-modeline-2str timestamp)
+                        'mouse-face 'mode-line-highlight
+                        'help-echo "UndoTree Timestamp"))))
 
 ;;
 ;;; Flymake
@@ -579,8 +599,12 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
 
 (defun jcs-modeline--render-csv ()
   "Render for `csv-mode'."
-  (when (memq major-mode '(csv-mode tsv-mode))
-    (concat (format-mode-line csv-mode-line-format) " ")))
+  (when-let (((memq major-mode '(csv-mode tsv-mode)))
+             (ind (format-mode-line csv-mode-line-format)))
+    (concat (propertize ind
+                        'mouse-face 'mode-line-highlight
+                        'help-echo "csv")
+            " ")))
 
 ;;
 ;;; Nov
@@ -590,8 +614,11 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
 
 (defun jcs-modeline--render-nov ()
   "Render for nov."
-  (when (eq major-mode 'nov-mode)
-    (format "[%s/%s]" (1+ nov-documents-index) (length nov-documents))))
+  (when-let (((eq major-mode 'nov-mode))
+             (ind (format "[%s/%s]" (1+ nov-documents-index) (length nov-documents))))
+    (propertize ind
+                'mouse-face 'mode-line-highlight
+                'help-echo "[current page/totla page]")))
 
 ;;
 ;; (@* "Themes" )
