@@ -46,8 +46,7 @@
   :link '(url-link :tag "Github" "https://github.com/jcs-emacs/jcs-modeline"))
 
 (defcustom jcs-modeline-left
-  `("%e "
-    mode-line-front-space
+  `((:eval (jcs-modeline--render-front-spaces))
     (:eval (jcs-modeline--render-buffer-identification))
     (:eval (jcs-modeline--render-modes))
     (:eval (jcs-modeline--render-vc-project))
@@ -66,7 +65,7 @@
     (:eval (jcs-modeline--render-vc-info))
     (:eval (jcs-modeline--render-line-columns))
     (:eval (jcs-modeline--render-percent-position))
-    mode-line-end-spaces)
+    (:eval (jcs-modeline--render-end-spaces)))
   "List of item to render on the right."
   :type 'list
   :group 'jcs-modeline)
@@ -195,6 +194,10 @@
   "Wrapper for function `format-mode-line'."
   (string-trim (format-mode-line format face window buffer)))
 
+(defun jcs-modeline--moody-tab (arg0 &rest _)
+  "Override `moody-ta' function when inside the terminal."
+  (concat " " arg0 " "))
+
 ;;
 ;; (@* "Core" )
 ;;
@@ -255,9 +258,17 @@
             (list (format (format "%%%ds" available-width) ""))
             right)))
 
-(defun jcs-modeline--moody-tab (arg0 &rest _)
-  "Override `moody-ta' function when inside the terminal."
-  (concat " " arg0 " "))
+;;
+;; (@* "Padding" )
+;;
+
+(defun jcs-modeline--render-front-spaces ()
+  "Return the front spaces."
+  "  ")
+
+(defun jcs-modeline--render-end-spaces ()
+  "Return the end spaces."
+  (unless elenv-graphic-p "  "))
 
 ;;
 ;; (@* "Plugins" )
