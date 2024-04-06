@@ -457,17 +457,15 @@ mouse-1: Reveal project in folder" project)
 ;;; Text Scale
 
 (defvar text-scale-mode-amount)
+(defvar text-scale-mode-lighter)
 
 (defun jcs-modeline--render-text-scale ()
   "Render text-scale amount."
-  (when-let (((and (boundp 'text-scale-mode-amount) (/= text-scale-mode-amount 0)))
-             (ind (format (if (> text-scale-mode-amount 0)
-                              "%+d"
-                            "%-d")
-                          text-scale-mode-amount)))
-    (format "(%s) " (propertize ind
+  (when (and (boundp 'text-scale-mode-lighter)
+             (/= text-scale-mode-amount 0))
+    (format "(%s) " (propertize text-scale-mode-lighter
                                 'mouse-face 'mode-line-highlight
-                                'help-echo (concat "Text scale " ind)))))
+                                'help-echo (concat "Text scale " text-scale-mode-lighter)))))
 
 ;;
 ;;; Undo
