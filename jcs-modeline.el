@@ -192,11 +192,16 @@
   (ignore-errors (jcs-modeline--light-color-p (face-background 'default))))
 
 (defun jcs-modeline-format (format &optional face window buffer)
-  "Wrapper for function `format-mode-line'."
+  "Wrapper for function `format-mode-line'.
+
+Arguments FORMAT, FACE, WINDOW and BUFFER are parameters from the
+`format-mode-line' function."
   (string-trim (format-mode-line format face window buffer)))
 
 (defun jcs-modeline--moody-tab (arg0 &rest _)
-  "Override `moody-ta' function when inside the terminal."
+  "Override the function `moody-tab' when inside the terminal.
+
+Position argument ARG0."
   (concat " " arg0 " "))
 
 ;;
@@ -373,7 +378,7 @@ mouse-1: Toggle display of major mode name"
   (when-let ((current (project-current))) (project-root current)))
 
 (defcustom jcs-modeline-show-project-name-virutal-buffer nil
-  "If non-nil, display project-name in virutal buffer."
+  "If non-nil, display project's name in the virutal buffer."
   :type 'boolean
   :group 'jcs-modeline)
 
@@ -481,7 +486,7 @@ mouse-1: Reveal project in folder" project)
                         'help-echo "UndoTree Parent Buffer"))))
 
 (defun jcs-modeline--undo-tree-branch-height (root)
-  "Return the total height of the current branch."
+  "Return the total height of the current branch from ROOT."
   (let ((count 0))
     (while (setq root (nth (undo-tree-node-branch root)
                            (undo-tree-node-next root)))
@@ -532,7 +537,7 @@ mouse-1: Reveal project in folder" project)
 ;;; Flymake
 
 (defun jcs-modeline--flymake-lighter (diags-by-type state running)
-  "Return flycheck lighter by given STATE.
+  "Return flycheck lighter by given DIAGS-BY-TYPE and STATE.
 
 If argument RUNNING is non-nil, we turn lighter into question mark."
   (let* ((c-state (cl-case state
