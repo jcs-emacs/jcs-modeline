@@ -341,14 +341,14 @@ mouse-1: Toggle display of major mode name"
 (defun jcs-modeline--render-line-columns ()
   "Render current line number and column."
   (let* ((ind-line (propertize (jcs-modeline-format "%l")
-                               'mouse-face 'moody-mode-line-height
+                               'mouse-face 'mode-line-highlight
                                'help-echo "Line"))
          (ind-column (propertize (jcs-modeline-format "%c")
-                                 'mouse-face 'moody-mode-line-height
+                                 'mouse-face 'mode-line-highlight
                                  'help-echo "Column"))
          (ind-point (concat "("
                             (propertize (jcs-modeline-2str (point))
-                                        'mouse-face 'moody-mode-line-height
+                                        'mouse-face 'mode-line-highlight
                                         'help-echo "Point")
                             ")"))
          (lst (if jcs-modeline-show-point
@@ -362,7 +362,7 @@ mouse-1: Toggle display of major mode name"
 (defun jcs-modeline--render-percent-position ()
   "Render current scroll."
   (concat " " (propertize "%p"
-                          'mouse-face 'moody-mode-line-height
+                          'mouse-face 'mode-line-highlight
                           'help-echo "Percent position")))
 
 ;;
