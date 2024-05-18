@@ -305,10 +305,15 @@ Position argument ARG0."
   :type 'boolean
   :group 'jcs-modeline)
 
+(defun jcs-modeline--icon-for-buffer ()
+  "Return icon for buffer."
+  (or (ignore-errors (nerd-icons-icon-for-file (buffer-file-name)))
+      (ignore-errors (nerd-icons-icon-for-mode major-mode))))
+
 (defun jcs-modeline--render-modes ()
   "Render line modes."
   (let* ((icon (and jcs-modeline-show-mode-icons
-                    (when-let* ((icon (nerd-icons-icon-for-buffer))
+                    (when-let* ((icon (jcs-modeline--icon-for-buffer))
                                 (icon (if (or (null icon) (symbolp icon))
                                           (nerd-icons-faicon "nf-fa-file_o")
                                         icon))
