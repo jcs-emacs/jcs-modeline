@@ -47,9 +47,10 @@
 
 (defcustom jcs-modeline-left
   `((:eval (jcs-modeline--render-front-spaces))
-    (:eval (jcs-modeline--render-buffer-identification))
     (:eval (jcs-modeline--render-modes))
-    (:eval (jcs-modeline--render-vc-project))
+    (:eval (jcs-modeline--render-buffer-identification))
+    (:eval (moody-tab (jcs-modeline--render-vc-project)))
+    (:eval (jcs-modeline--render-read-only))
     (:eval mode-line-process))
   "List of item to render on the left."
   :type 'list
@@ -64,7 +65,7 @@
     (:eval (jcs-modeline--render-undo-tree-buffer-name))
     (:eval (jcs-modeline--render-undo-tree-status))
     (:eval (jcs-modeline--render-vc-info))
-    (:eval (jcs-modeline--render-line-columns))
+    (:eval (moody-tab (jcs-modeline--render-line-columns) 0 'up))
     (:eval (jcs-modeline--render-percent-position))
     (:eval (jcs-modeline--render-end-spaces)))
   "List of item to render on the right."
@@ -285,11 +286,8 @@ Position argument ARG0."
 
 (defun jcs-modeline--render-buffer-identification ()
   "Render buffer identification."
-  (concat (if buffer-read-only
-              (or (jcs-modeline--char-displayable-p "🔒 ")
-                  "&L ")
-            "")
-          (jcs-modeline-format mode-line-buffer-identification)
+  (concat (and (not (bound-and-true-p centaur-tabs-mode))
+               (jcs-modeline-format mode-line-buffer-identification))
           " "))
 
 ;;
@@ -326,19 +324,18 @@ Position argument ARG0."
                                                  mode-line-modes))))
          (lst (cl-remove-if #'null (list icon line-modes)))
          (ind (mapconcat #'identity lst " ")))
-    (moody-tab
-     (propertize ind
-                 'mouse-face 'mode-line-highlight
-                 'help-echo "Major and minor modes
+    (propertize ind
+                'mouse-face 'mode-line-highlight
+                'help-echo "Major and minor modes
 mouse-1: Toggle display of major mode name"
-                 'local-map (let ((map (make-sparse-keymap)))
-                              (define-key map (vector 'mode-line 'mouse-1)
-                                          (lambda (&rest _)
-                                            (interactive)
-                                            (setq jcs-modeline-show-mode-name
-                                                  (not jcs-modeline-show-mode-name))
-                                            (force-mode-line-update t)))
-                              map)))))
+                'local-map (let ((map (make-sparse-keymap)))
+                             (define-key map (vector 'mode-line 'mouse-1)
+                                         (lambda (&rest _)
+                                           (interactive)
+                                           (setq jcs-modeline-show-mode-name
+                                                 (not jcs-modeline-show-mode-name))
+                                           (force-mode-line-update t)))
+                             map))))
 
 ;;
 ;;; Line and Columns
@@ -364,7 +361,7 @@ mouse-1: Toggle display of major mode name"
          (lst (if jcs-modeline-show-point
                   (list ind-line ind-column ind-point)
                 (list ind-line ind-column))))
-    (moody-tab (mapconcat #'identity lst " ") 0 'up)))
+    (mapconcat #'identity lst " ")))
 
 ;;
 ;;; Scroll
@@ -378,6 +375,11 @@ mouse-1: Toggle display of major mode name"
 ;;
 ;;; Project
 
+(defcustom jcs-modeline-project-indicator "-*-"
+  "String indicator when project root is not found."
+  :type 'string
+  :group 'jcs-modeline)
+
 (defun jcs-modeline--project-root ()
   "Return project directory path."
   (when-let ((current (project-current))) (project-root current)))
@@ -389,23 +391,31 @@ mouse-1: Toggle display of major mode name"
 
 (defun jcs-modeline--render-vc-project ()
   "Return the project name."
-  (when-let* (((or (buffer-file-name) jcs-modeline-show-project-name-virutal-buffer))
-              (project (jcs-modeline--project-root))
-              (ind (file-name-nondirectory (directory-file-name project))))
-    (concat
-     " "
-     (propertize ind
-                 'mouse-face 'mode-line-highlight
-                 'help-echo (format "Project Name
+  (if-let* (((or (buffer-file-name) jcs-modeline-show-project-name-virutal-buffer))
+            (project (jcs-modeline--project-root))
+            (ind (file-name-nondirectory (directory-file-name project))))
+      (concat
+       (propertize ind
+                   'mouse-face 'mode-line-highlight
+                   'help-echo (format "Project Name
 path: %s
 mouse-1: Reveal project in folder" project)
-                 'local-map
-                 (let ((map (make-sparse-keymap)))
-                   (define-key map (vector 'mode-line 'mouse-2)
-                               (lambda (&rest _)
-                                 (interactive)
-                                 (reveal-in-folder-open project)))
-                   map)))))
+                   'local-map
+                   (let ((map (make-sparse-keymap)))
+                     (define-key map (vector 'mode-line 'mouse-1)
+                                 (lambda (&rest _)
+                                   (interactive)
+                                   (reveal-in-folder-open project)))
+                     map)))
+    (propertize jcs-modeline-project-indicator
+                'mouse-face 'mode-line-highlight
+                'help-echo "Project Name
+
+mouse-1: Switch project"
+                'local-map
+                (let ((map (make-sparse-keymap)))
+                  (define-key map (vector 'mode-line 'mouse-1) #'project-switch-project)
+                  map))))
 
 ;;
 ;;; Version Control
@@ -462,6 +472,18 @@ mouse-1: Reveal project in folder" project)
                         'mouse-face 'mode-line-highlight
                         'help-echo tip)
             " ")))
+
+;;
+;;; Read-Only
+
+(defun jcs-modeline--render-read-only ()
+  "Render read-only indicator."
+  (concat " "
+          (if buffer-read-only
+              (or (jcs-modeline--char-displayable-p "🔒")
+                  "&L")
+            (or (jcs-modeline--char-displayable-p "🔓")
+                "&U"))))
 
 ;;
 ;;; Text Scale
