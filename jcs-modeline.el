@@ -47,7 +47,7 @@
 
 (defcustom jcs-modeline-left
   `((:eval (jcs-modeline--render-front-spaces))
-    (:eval (moody-tab (jcs-modeline--render-buffer-identification)))
+    (:eval (jcs-modeline--render-buffer-identification))
     (:eval (jcs-modeline--render-modes))
     (:eval (moody-tab (jcs-modeline--render-vc-project)))
     (:eval (jcs-modeline--render-read-only))
@@ -287,7 +287,7 @@ Position argument ARG0."
 (defun jcs-modeline--render-buffer-identification ()
   "Render buffer identification."
   (unless (bound-and-true-p centaur-tabs-mode)
-    (jcs-modeline-format mode-line-buffer-identification)))
+    (moody-tab (jcs-modeline-format mode-line-buffer-identification))))
 
 ;;
 ;;; Modes
