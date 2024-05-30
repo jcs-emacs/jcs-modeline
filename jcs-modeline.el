@@ -323,18 +323,19 @@ Position argument ARG0."
                                                  mode-line-modes))))
          (lst (cl-remove-if #'null (list icon line-modes)))
          (ind (mapconcat #'identity lst " ")))
-    (propertize ind
-                'mouse-face 'mode-line-highlight
-                'help-echo "Major and minor modes
+    (concat (propertize ind
+                        'mouse-face 'mode-line-highlight
+                        'help-echo "Major and minor modes
 mouse-1: Toggle display of major mode name"
-                'local-map (let ((map (make-sparse-keymap)))
-                             (define-key map (vector 'mode-line 'mouse-1)
-                                         (lambda (&rest _)
-                                           (interactive)
-                                           (setq jcs-modeline-show-mode-name
-                                                 (not jcs-modeline-show-mode-name))
-                                           (force-mode-line-update t)))
-                             map))))
+                        'local-map (let ((map (make-sparse-keymap)))
+                                     (define-key map (vector 'mode-line 'mouse-1)
+                                                 (lambda (&rest _)
+                                                   (interactive)
+                                                   (setq jcs-modeline-show-mode-name
+                                                         (not jcs-modeline-show-mode-name))
+                                                   (force-mode-line-update t)))
+                                     map))
+            " ")))
 
 ;;
 ;;; Line and Columns
