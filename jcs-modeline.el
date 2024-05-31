@@ -51,7 +51,7 @@
     (:eval (jcs-modeline--render-modes))
     (:eval (moody-tab (jcs-modeline--render-vc-project)))
     (:eval (jcs-modeline--render-read-only))
-    (:eval mode-line-process))
+    (:eval (jcs-modeline--render-mode-line-process)))
   "List of item to render on the left."
   :type 'list
   :group 'jcs-modeline)
@@ -288,6 +288,11 @@ Position argument ARG0."
   "Render buffer identification."
   (unless (bound-and-true-p centaur-tabs-mode)
     (moody-tab (jcs-modeline-format mode-line-buffer-identification))))
+
+(defun jcs-modeline--render-mode-line-process ()
+  "Render `mode-line-process'."
+  (when mode-line-process
+    (concat " " (jcs-modeline-format mode-line-process))))
 
 ;;
 ;;; Modes
