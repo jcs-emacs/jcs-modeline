@@ -484,11 +484,18 @@ mouse-1: Switch project"
 (defun jcs-modeline--render-read-only ()
   "Render read-only indicator."
   (concat " "
-          (if buffer-read-only
-              (or (jcs-modeline--char-displayable-p "🔒")
-                  "&L")
-            (or (jcs-modeline--char-displayable-p "🔓")
-                "&U"))))
+          (propertize (if buffer-read-only
+                          (or (jcs-modeline--char-displayable-p "🔒")
+                              "&L")
+                        (or (jcs-modeline--char-displayable-p "🔓")
+                            "&U"))
+                      'mouse-face 'mode-line-highlight
+                      'help-echo (format "Buffer read-only: %s"
+                                         (if buffer-read-only "ON" "OFF"))
+                      'local-map
+                      (let ((map (make-sparse-keymap)))
+                        (define-key map (vector 'mode-line 'mouse-1) #'read-only-mode)
+                        map))))
 
 ;;
 ;;; Text Scale
