@@ -13,7 +13,7 @@
 (source 'jcs-elpa)
 (source 'melpa)
 
-(depends-on "emacs" "27.1")
+(depends-on "emacs" "29.1")
 (depends-on "elenv")
 (depends-on "moody")
 (depends-on "minions")

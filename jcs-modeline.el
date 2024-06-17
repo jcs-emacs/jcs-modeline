@@ -6,7 +6,7 @@
 ;; Maintainer: Shen, Jen-Chieh <jcs090218@gmail.com>
 ;; URL: https://github.com/jcs-emacs/jcs-modeline
 ;; Version: 0.1.1
-;; Package-Requires: ((emacs "28.1") (moody "0.7.1") (minions "0.3.7") (elenv "0.1.0") (nerd-icons "0.0.1") (reveal-in-folder "0.1.2"))
+;; Package-Requires: ((emacs "29.1") (moody "0.7.1") (minions "0.3.7") (elenv "0.1.0") (nerd-icons "0.0.1") (reveal-in-folder "0.1.2"))
 ;; Keywords: faces mode-line
 
 ;; This file is not part of GNU Emacs.
@@ -83,9 +83,6 @@
 ;;
 ;; (@* "Externals" )
 ;;
-
-(declare-function string-pixel-width "subr-x.el")   ; TODO: remove this after 29.1
-(declare-function shr-string-pixel-width "shr.el")  ; TODO: remove this after 29.1
 
 (defvar buffer-undo-tree)
 (defvar undo-tree-visualizer-buffer-name)
@@ -171,18 +168,10 @@
     (puthash char result jcs-modeline--char-displayable-cache)
     (and result str-or-char)))
 
-;; TODO: Use function `string-pixel-width' after 29.1
-(defun jcs-modeline--string-pixel-width (str)
-  "Return the width of STR in pixels."
-  (if (fboundp #'string-pixel-width)
-      (string-pixel-width str)
-    (require 'shr)
-    (shr-string-pixel-width str)))
-
-(defun jcs-modeline--str-len (str)
+(defun jcs-modeline--str-width (str)
   "Calculate STR in pixel width."
   (let ((width (frame-char-width))
-        (len (jcs-modeline--string-pixel-width str)))
+        (len (string-pixel-width str)))
     (+ (/ len width)
        (if (zerop (% len width)) 0 1))))  ; add one if exceeed
 
@@ -235,7 +224,7 @@ Position argument ARG0."
       (let* ((item (nth (if is-left left-index right-index)
                         (if is-left jcs-modeline-left right-list)))
              (format (format-mode-line item))
-             (width (jcs-modeline--str-len format))
+             (width (jcs-modeline--str-width format))
              (new-width (+ current-width width)))
         ;; Can the new item added to the list?
         (when (<= new-width (window-width))  ; can be displayed properly!
@@ -262,8 +251,8 @@ Position argument ARG0."
 
 (defun jcs-modeline-render (left right)
   "Render mode line with LEFT and RIGHT alignment."
-  (let* ((len-left (jcs-modeline--str-len (format-mode-line left)))
-         (len-right (jcs-modeline--str-len (format-mode-line right)))
+  (let* ((len-left (jcs-modeline--str-width (format-mode-line left)))
+         (len-right (jcs-modeline--str-width (format-mode-line right)))
          (available-width (- (window-width) (+ len-left len-right)))
          (available-width (+ available-width (jcs-modeline--adjust-pad))))
     (append left
