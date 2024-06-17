@@ -158,12 +158,17 @@
   "Convert OBJ to string."
   (format "%s" obj))
 
+(defvar jcs-modeline--char-displayable-cache (make-hash-table :test 'equal)
+  "Cache the displable character.")
+
 (defun jcs-modeline--char-displayable-p (str-or-char)
   "Check if STR-OR-CHAR is displayable."
   (when-let* ((char (if (stringp str-or-char)
                         (string-to-char str-or-char)
                       str-or-char))
-              ((char-displayable-p char)))
+              (result (or (gethash char jcs-modeline--char-displayable-cache)
+                          (char-displayable-p char))))
+    (puthash char result jcs-modeline--char-displayable-cache)
     str-or-char))
 
 ;; TODO: Use function `string-pixel-width' after 29.1
