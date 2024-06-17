@@ -163,13 +163,13 @@
 
 (defun jcs-modeline--char-displayable-p (str-or-char)
   "Check if STR-OR-CHAR is displayable."
-  (when-let* ((char (if (stringp str-or-char)
-                        (string-to-char str-or-char)
-                      str-or-char))
-              (result (or (gethash char jcs-modeline--char-displayable-cache)
-                          (char-displayable-p char))))
+  (let* ((char (if (stringp str-or-char)
+                   (string-to-char str-or-char)
+                 str-or-char))
+         (result (or (gethash char jcs-modeline--char-displayable-cache)
+                     (char-displayable-p char))))
     (puthash char result jcs-modeline--char-displayable-cache)
-    str-or-char))
+    (and result str-or-char)))
 
 ;; TODO: Use function `string-pixel-width' after 29.1
 (defun jcs-modeline--string-pixel-width (str)
