@@ -109,6 +109,8 @@
 (declare-function flycheck-has-current-errors-p "ext:flycheck.el")
 (declare-function flycheck-count-errors "ext:flycheck.el")
 
+(declare-function magit-branch "ext:magit-branch.el")
+
 ;;
 ;; (@* "Entry" )
 ;;
@@ -463,13 +465,21 @@ mouse-1: Switch project"
               (tip (jcs-modeline-2str backend)))
     (concat (propertize backend-icon
                         'mouse-face 'mode-line-highlight
-                        'help-echo tip)
+                        'help-echo tip
+                        'local-map
+                        (let ((map (make-sparse-keymap)))
+                          (define-key map (vector 'mode-line 'mouse-1) #'magit-branch)
+                          map))
             (propertize (concat
                          separator
                          branch)
                         'face 'jcs-modeline-vc-face
                         'mouse-face 'mode-line-highlight
-                        'help-echo tip)
+                        'help-echo tip
+                        'local-map
+                        (let ((map (make-sparse-keymap)))
+                          (define-key map (vector 'mode-line 'mouse-1) #'magit-branch)
+                          map))
             " ")))
 
 ;;
