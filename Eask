@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "jcs-modeline"
          "0.1.1"
          "A modeline for jcs-emacs")
