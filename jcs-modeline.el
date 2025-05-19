@@ -53,7 +53,7 @@
     (:eval (jcs-modeline--render-read-only))
     (:eval (jcs-modeline--render-mode-line-process)))
   "List of item to render on the left."
-  :type 'list
+  :type '(list symbol)
   :group 'jcs-modeline)
 
 (defcustom jcs-modeline-right
@@ -69,7 +69,7 @@
     (:eval (jcs-modeline--render-percent-position))
     (:eval (jcs-modeline--render-end-spaces)))
   "List of item to render on the right."
-  :type 'list
+  :type '(list symbol)
   :group 'jcs-modeline)
 
 (defcustom jcs-modeline-checker-colors '((error   . "#FB4933")
@@ -77,7 +77,7 @@
                                          (info    . "#83A598")
                                          (note    . "#83A598"))
   "Alist of colors for checkers."
-  :type 'list
+  :type '(list symbol)
   :group 'jcs-modeline)
 
 ;;
@@ -383,7 +383,7 @@ mouse-1: Toggle display of major mode name"
 
 (defun jcs-modeline--project-root ()
   "Return project directory path."
-  (when-let ((current (project-current))) (project-root current)))
+  (when-let* ((current (project-current))) (project-root current)))
 
 (defcustom jcs-modeline-show-project-name-virutal-buffer nil
   "If non-nil, display project's name in the virutal buffer."
@@ -444,7 +444,7 @@ mouse-1: Switch project"
                (nerd-icons-devicon "nf-dev-git_branch" :face 'jcs-modeline-vc-face)))
     (Hg   . ,jcs-modeline-vc-unknown-icon))
   "Alist of vc backends to icon."
-  :type 'list
+  :type '(list symbol)
   :group 'jcs-modeline)
 
 (declare-function vc-git--symbolic-ref "vc-git.el")
@@ -520,9 +520,9 @@ mouse-1: Switch project"
 
 (defun jcs-modeline--render-undo-tree-buffer-name ()
   "Render text-scale amount."
-  (when-let (((featurep 'undo-tree))
-             ((equal (buffer-name) undo-tree-visualizer-buffer-name))
-             (ind (buffer-name undo-tree-visualizer-parent-buffer)))
+  (when-let* (((featurep 'undo-tree))
+              ((equal (buffer-name) undo-tree-visualizer-buffer-name))
+              (ind (buffer-name undo-tree-visualizer-parent-buffer)))
     (concat " "
             (propertize ind
                         'mouse-face 'mode-line-highlight
@@ -614,9 +614,9 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
               (last (car (last states)))
               result)
          (dolist (state states)
-           (when-let ((lighter (jcs-modeline--flymake-lighter
-                                diags-by-type state
-                                (or some-waiting (null known) all-disabled))))
+           (when-let* ((lighter (jcs-modeline--flymake-lighter
+                                 diags-by-type state
+                                 (or some-waiting (null known) all-disabled))))
              (setq result (concat result lighter
                                   (unless (equal state last) "/")))))
          (propertize result
@@ -646,7 +646,7 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
             (running (eq 'running flycheck-last-status-change))
             result)
        (dolist (state states)
-         (when-let ((lighter (jcs-modeline--flycheck-lighter state running)))
+         (when-let* ((lighter (jcs-modeline--flycheck-lighter state running)))
            (setq result (concat result lighter
                                 (unless (equal state last) "/")))))
        (propertize result
@@ -661,8 +661,8 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
 
 (defun jcs-modeline--render-csv ()
   "Render for `csv-mode'."
-  (when-let (((memq major-mode '(csv-mode tsv-mode)))
-             (ind (format-mode-line csv-mode-line-format)))
+  (when-let* (((memq major-mode '(csv-mode tsv-mode)))
+              (ind (format-mode-line csv-mode-line-format)))
     (concat (propertize ind
                         'mouse-face 'mode-line-highlight
                         'help-echo "csv")
@@ -676,8 +676,8 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
 
 (defun jcs-modeline--render-nov ()
   "Render for nov."
-  (when-let (((eq major-mode 'nov-mode))
-             (ind (format "[%s/%s]" (1+ nov-documents-index) (length nov-documents))))
+  (when-let* (((eq major-mode 'nov-mode))
+              (ind (format "[%s/%s]" (1+ nov-documents-index) (length nov-documents))))
     (propertize ind
                 'mouse-face 'mode-line-highlight
                 'help-echo "[current page/totla page]")))
