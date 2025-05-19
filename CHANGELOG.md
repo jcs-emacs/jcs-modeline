@@ -16,6 +16,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * feat: Add mouse support for `nov`, `csv`, and `undo-tree` (3f32fd2fbaa767e6b7c2f33fb21b6c81f32a4f32)
 * feat: Add front and end spaces (cfbf3eec6c23a4d41a45a6ac60218868de2c1e2b)
 * fix: Handle the variable `mode-line-process` (aafa3eaaa07104f04bf50edec003dfe8d89d755f)
+* feat: Add support for `default-text-scale` (63f2e26273bde88d439769d35b82b8ba6c88df5c)
 
 ## 0.1.1
 > Released Jan 31, 2023
