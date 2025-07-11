@@ -29,7 +29,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Integrate `flymake` segment ([`4d36abc`](../../commit/4d36abc780d547aa07e250839b349421c60dc468))
 * Update `flycheck` lighter ([`559db66`](../../commit/559db6644036ab6bb8d806081d6dcbd40b6d3876))
 * Update `flymake` lighter ([`ccaeb6b`](../../commit/ccaeb6bb75a551bfe37f833ce32f762eea9622ef))
-* feat: Render undo-tree parent buffer name ([`#1`](../../pull/1))
+* feat: Render undo-tree parent buffer name ([#1](../../pull/1))
 * Add custom variable to show point information ([`c8d4905`](../../commit/c8d4905ebd7001234066a1e321bbecd1cc10317f))
 
 ## 0.1.0
