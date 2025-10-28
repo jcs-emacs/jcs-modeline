@@ -153,10 +153,6 @@
 ;; (@* "Util" )
 ;;
 
-(defun jcs-modeline-2str (obj)
-  "Convert OBJ to string."
-  (format "%s" obj))
-
 (defvar jcs-modeline--char-displayable-cache (make-hash-table :test 'equal)
   "Cache the displable character.")
 
@@ -355,7 +351,7 @@ mouse-1: Toggle display of major mode name"
                                  'mouse-face 'mode-line-highlight
                                  'help-echo "Column"))
          (ind-point (concat "("
-                            (propertize (jcs-modeline-2str (point))
+                            (propertize (elenv-2str (point))
                                         'mouse-face 'mode-line-highlight
                                         'help-echo "Point")
                             ")"))
@@ -462,7 +458,7 @@ mouse-1: Switch project"
                                   (not (string-empty-p backend-icon)))
                              " "
                            ""))
-              (tip (jcs-modeline-2str backend)))
+              (tip (elenv-2str backend)))
     (concat (propertize backend-icon
                         'mouse-face 'mode-line-highlight
                         'help-echo tip
@@ -556,23 +552,23 @@ mouse-1: Switch project"
               (tree-size (undo-tree-size buffer-undo-tree))
               (timestamp (string-trim (undo-tree-timestamp-to-string timestamp))))
     (concat " "
-            (propertize (jcs-modeline-2str tree-height)
+            (propertize (elenv-2str tree-height)
                         'mouse-face 'mode-line-highlight
                         'help-echo "UndoTree Height")
             "/"
-            (propertize (jcs-modeline-2str tree-branch-height)
+            (propertize (elenv-2str tree-branch-height)
                         'mouse-face 'mode-line-highlight
                         'help-echo "UndoTree Branch Height")
             "/"
-            (propertize (jcs-modeline-2str tree-count)
+            (propertize (elenv-2str tree-count)
                         'mouse-face 'mode-line-highlight
                         'help-echo "UndoTree Count")
             " ("
-            (propertize (jcs-modeline-2str tree-size)
+            (propertize (elenv-2str tree-size)
                         'mouse-face 'mode-line-highlight
                         'help-echo "UndoTree Size")
             ") "
-            (propertize (jcs-modeline-2str timestamp)
+            (propertize (elenv-2str timestamp)
                         'mouse-face 'mode-line-highlight
                         'help-echo "UndoTree Timestamp"))))
 
