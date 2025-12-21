@@ -199,6 +199,17 @@ Arguments FORMAT, FACE, WINDOW and BUFFER are parameters from the
 Position argument ARG0."
   (concat " " arg0 " "))
 
+(defmacro jcs-modeline--with-mouse-click (&rest body)
+  "Execute BODY with in the mouse click event."
+  (declare (indent 0))
+  `(let ((map (make-sparse-keymap)))
+     (define-key map (vector 'mode-line 'mouse-1)
+                 (lambda (&rest _)
+                   (interactive)
+                   (call-interactively #'mouse-select-window)
+                   ,@body))
+     map))
+
 ;;
 ;; (@* "Core" )
 ;;
@@ -326,14 +337,10 @@ Position argument ARG0."
                         'mouse-face 'mode-line-highlight
                         'help-echo "Major and minor modes
 mouse-1: Toggle display of major mode name"
-                        'local-map (let ((map (make-sparse-keymap)))
-                                     (define-key map (vector 'mode-line 'mouse-1)
-                                                 (lambda (&rest _)
-                                                   (interactive)
-                                                   (setq jcs-modeline-show-mode-name
-                                                         (not jcs-modeline-show-mode-name))
-                                                   (force-mode-line-update t)))
-                                     map))
+                        'local-map (jcs-modeline--with-mouse-click
+                                     (setq jcs-modeline-show-mode-name
+                                           (not jcs-modeline-show-mode-name))
+                                     (force-mode-line-update t)))
             " ")))
 
 ;;
@@ -399,22 +406,15 @@ mouse-1: Toggle display of major mode name"
                    'help-echo (format "Project Name
 path: %s
 mouse-1: Reveal project in folder" project)
-                   'local-map
-                   (let ((map (make-sparse-keymap)))
-                     (define-key map (vector 'mode-line 'mouse-1)
-                                 (lambda (&rest _)
-                                   (interactive)
-                                   (reveal-in-folder-open project)))
-                     map)))
+                   'local-map (jcs-modeline--with-mouse-click
+                                (reveal-in-folder-open project))))
     (propertize jcs-modeline-project-indicator
                 'mouse-face 'mode-line-highlight
                 'help-echo "Project Name
 
 mouse-1: Switch project"
-                'local-map
-                (let ((map (make-sparse-keymap)))
-                  (define-key map (vector 'mode-line 'mouse-1) #'project-switch-project)
-                  map))))
+                'local-map (jcs-modeline--with-mouse-click
+                             (call-interactively #'project-switch-project)))))
 
 ;;
 ;;; Version Control
@@ -464,20 +464,16 @@ mouse-1: Switch project"
     (concat (propertize backend-icon
                         'mouse-face 'mode-line-highlight
                         'help-echo tip
-                        'local-map
-                        (let ((map (make-sparse-keymap)))
-                          (define-key map (vector 'mode-line 'mouse-1) #'magit-branch)
-                          map))
+                        'local-map (jcs-modeline--with-mouse-click
+                                     (call-interactively #'#'magit-branch)))
             (propertize (concat
                          separator
                          branch)
                         'face 'jcs-modeline-vc-face
                         'mouse-face 'mode-line-highlight
                         'help-echo tip
-                        'local-map
-                        (let ((map (make-sparse-keymap)))
-                          (define-key map (vector 'mode-line 'mouse-1) #'magit-branch)
-                          map))
+                        'local-map (jcs-modeline--with-mouse-click
+                                     (call-interactively #'magit-branch)))
             " ")))
 
 ;;
@@ -494,10 +490,8 @@ mouse-1: Switch project"
                       'mouse-face 'mode-line-highlight
                       'help-echo (format "Buffer read-only: %s"
                                          (if buffer-read-only "ON" "OFF"))
-                      'local-map
-                      (let ((map (make-sparse-keymap)))
-                        (define-key map (vector 'mode-line 'mouse-1) #'read-only-mode)
-                        map))))
+                      'local-map (jcs-modeline--with-mouse-click
+                                   (call-interactively #'read-only-mode)))))
 
 ;;
 ;;; Text Scale
@@ -620,12 +614,8 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
          (propertize result
                      'mouse-face 'mode-line-highlight
                      'help-echo "flymake"
-                     'local-map (let ((map (make-sparse-keymap)))
-                                  (define-key map (vector 'mode-line 'mouse-1)
-                                              (lambda (&rest _)
-                                                (interactive)
-                                                (flymake-goto-next-error)))
-                                  map)))
+                     'local-map (jcs-modeline--with-mouse-click
+                                  (flymake-goto-next-error))))
        " "))))
 
 ;;
@@ -656,12 +646,8 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
        (propertize result
                    'mouse-face 'mode-line-highlight
                    'help-echo "flycheck"
-                   'local-map (let ((map (make-sparse-keymap)))
-                                (define-key map (vector 'mode-line 'mouse-1)
-                                            (lambda (&rest _)
-                                              (interactive)
-                                              (flycheck-next-error)))
-                                map)))
+                   'local-map (jcs-modeline--with-mouse-click
+                                (flycheck-next-error))))
      " ")))
 
 ;;
