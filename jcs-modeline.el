@@ -103,11 +103,13 @@
 (declare-function flymake-reporting-backends "ext:flymake.el")
 (declare-function flymake--diag-type "ext:flymake.el")
 (declare-function flymake--state-diags "ext:flymake.el")
+(declare-function flymake-goto-next-error "ext:flymake.el")
 
 (defvar flycheck-current-errors)
 (defvar flycheck-last-status-change)
 (declare-function flycheck-has-current-errors-p "ext:flycheck.el")
 (declare-function flycheck-count-errors "ext:flycheck.el")
+(declare-function flycheck-next-error "ext:flycheck.el")
 
 (declare-function magit-branch "ext:magit-branch.el")
 
@@ -617,7 +619,13 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
                                   (unless (equal state last) "/")))))
          (propertize result
                      'mouse-face 'mode-line-highlight
-                     'help-echo "flymake"))
+                     'help-echo "flymake"
+                     'local-map (let ((map (make-sparse-keymap)))
+                                  (define-key map (vector 'mode-line 'mouse-1)
+                                              (lambda (&rest _)
+                                                (interactive)
+                                                (flymake-goto-next-error)))
+                                  map)))
        " "))))
 
 ;;
@@ -647,7 +655,13 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
                                 (unless (equal state last) "/")))))
        (propertize result
                    'mouse-face 'mode-line-highlight
-                   'help-echo "flycheck"))
+                   'help-echo "flycheck"
+                   'local-map (let ((map (make-sparse-keymap)))
+                                (define-key map (vector 'mode-line 'mouse-1)
+                                            (lambda (&rest _)
+                                              (interactive)
+                                              (flycheck-next-error)))
+                                map)))
      " ")))
 
 ;;
