@@ -16,6 +16,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * feat: Add mouse support for `nov`, `csv`, and `undo-tree` ([`3f32fd2`](../../commit/3f32fd2fbaa767e6b7c2f33fb21b6c81f32a4f32))
 * feat: Add front and end spaces ([`cfbf3ee`](../../commit/cfbf3eec6c23a4d41a45a6ac60218868de2c1e2b))
 * fix: Handle the variable `mode-line-process` ([`aafa3ea`](../../commit/aafa3eaaa07104f04bf50edec003dfe8d89d755f))
+* feat: Goto next error for checkers ([`2c30baf`](../../commit/2c30baf6184d2fddef4a67c75c0728e01858eb3a))
+* fix: Move to window before mouse click execution ([`9852912`](../../commit/9852912b156e7c2d7f38244bd6ae2ab47fbbbb4e))
 
 ## 0.1.1
 > Released Jan 31, 2023
