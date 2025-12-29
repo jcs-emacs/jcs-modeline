@@ -1,7 +1,7 @@
 ;; -*- mode: eask; lexical-binding: t -*-
 
 (package "jcs-modeline"
-         "0.1.1"
+         "0.2.0"
          "A modeline for jcs-emacs")
 
 (website-url "https://github.com/jcs-emacs/jcs-modeline")

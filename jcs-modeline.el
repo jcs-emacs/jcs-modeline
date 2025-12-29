@@ -5,7 +5,7 @@
 ;; Author: Shen, Jen-Chieh <jcs090218@gmail.com>
 ;; Maintainer: Shen, Jen-Chieh <jcs090218@gmail.com>
 ;; URL: https://github.com/jcs-emacs/jcs-modeline
-;; Version: 0.1.1
+;; Version: 0.2.0
 ;; Package-Requires: ((emacs "29.1") (moody "0.7.1") (minions "0.3.7") (elenv "0.1.0") (nerd-icons "0.0.1") (reveal-in-folder "0.1.2"))
 ;; Keywords: faces mode-line
 
