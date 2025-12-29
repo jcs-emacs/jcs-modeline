@@ -18,6 +18,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * fix: Handle the variable `mode-line-process` ([`aafa3ea`](../../commit/aafa3eaaa07104f04bf50edec003dfe8d89d755f))
 * feat: Goto next error for checkers ([`2c30baf`](../../commit/2c30baf6184d2fddef4a67c75c0728e01858eb3a))
 * fix: Move to window before mouse click execution ([`9852912`](../../commit/9852912b156e7c2d7f38244bd6ae2ab47fbbbb4e))
+* feat: Better handle `nerd-icons` for buffer logic ([`e73dc7e`](../../commit/e73dc7e65ceb8d861c718df90b3a0c688ad50478))
 
 ## 0.1.1
 > Released Jan 31, 2023
