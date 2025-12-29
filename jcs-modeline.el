@@ -328,9 +328,7 @@ Position argument ARG0."
                       icon)))
          (line-modes (and (or jcs-modeline-show-mode-name
                               (null icon))
-                          (jcs-modeline-format (if minions-mode
-                                                   minions-mode-line-modes
-                                                 mode-line-modes))))
+                          (jcs-modeline-format mode-name)))
          (lst (cl-remove-if #'null (list icon line-modes)))
          (ind (mapconcat #'identity lst " ")))
     (concat (propertize ind
