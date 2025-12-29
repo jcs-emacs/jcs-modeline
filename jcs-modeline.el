@@ -111,7 +111,7 @@
 (declare-function flycheck-count-errors "ext:flycheck.el")
 (declare-function flycheck-next-error "ext:flycheck.el")
 
-(declare-function magit-branch "ext:magit-branch.el")
+(declare-function magit-branch-checkout "ext:magit-branch.el")
 
 ;;
 ;; (@* "Entry" )
@@ -465,7 +465,7 @@ mouse-1: Switch project"
                         'mouse-face 'mode-line-highlight
                         'help-echo tip
                         'local-map (jcs-modeline--with-mouse-click
-                                     (call-interactively #'#'magit-branch)))
+                                     (call-interactively #'#'magit-branch-checkout)))
             (propertize (concat
                          separator
                          branch)
@@ -473,7 +473,7 @@ mouse-1: Switch project"
                         'mouse-face 'mode-line-highlight
                         'help-echo tip
                         'local-map (jcs-modeline--with-mouse-click
-                                     (call-interactively #'magit-branch)))
+                                     (call-interactively #'magit-branch-checkout)))
             " ")))
 
 ;;
