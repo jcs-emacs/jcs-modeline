@@ -312,17 +312,25 @@ Position argument ARG0."
   :type 'boolean
   :group 'jcs-modeline)
 
+(defun jcs-modeline--icon-file-default ()
+  "Return the default file icon."
+  (nerd-icons-faicon "nf-fa-file_o"))
+
 (defun jcs-modeline--icon-for-buffer ()
   "Return icon for buffer."
-  (or (ignore-errors (nerd-icons-icon-for-file (buffer-file-name)))
-      (ignore-errors (nerd-icons-icon-for-mode major-mode))))
+  (let* ((icon-f (ignore-errors (nerd-icons-icon-for-file (buffer-file-name))))
+         (icon-m (ignore-errors (nerd-icons-icon-for-mode major-mode)))
+         (default-f (equal icon-f (jcs-modeline--icon-file-default))))
+    (if default-f
+        (or icon-m icon-f)
+      (or icon-f icon-m))))
 
 (defun jcs-modeline--render-modes ()
   "Render line modes."
   (let* ((icon (and jcs-modeline-show-mode-icons
                     (when-let* ((icon (jcs-modeline--icon-for-buffer))
                                 (icon (if (or (null icon) (symbolp icon))
-                                          (nerd-icons-faicon "nf-fa-file_o")
+                                          (jcs-modeline--icon-file-default)
                                         icon))
                                 ((jcs-modeline--char-displayable-p icon)))
                       icon)))
