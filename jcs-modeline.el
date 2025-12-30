@@ -312,14 +312,24 @@ Position argument ARG0."
   :type 'boolean
   :group 'jcs-modeline)
 
+(defcustom jcs-modeline-icon-scale-factor 1.0
+  "The base scale factor for the `height' face property of tab icons."
+  :type 'number
+  :group 'jcs-modeline)
+
+(defcustom jcs-modeline-icon-v-adjust 0.01
+  "The vertical adjust for tab icons."
+  :type 'number
+  :group 'jcs-modeline)
+
 (defun jcs-modeline--icon-file-default ()
   "Return the default file icon."
   (nerd-icons-faicon "nf-fa-file_o"))
 
-(defun jcs-modeline--icon-for-buffer ()
+(defun jcs-modeline--icon-for-buffer (&rest args)
   "Return icon for buffer."
-  (let* ((icon-f (ignore-errors (nerd-icons-icon-for-file (buffer-file-name))))
-         (icon-m (ignore-errors (nerd-icons-icon-for-mode major-mode)))
+  (let* ((icon-f (ignore-errors (apply #'nerd-icons-icon-for-file (buffer-file-name) args)))
+         (icon-m (ignore-errors (apply #'nerd-icons-icon-for-mode major-mode args)))
          (default-f (equal icon-f (jcs-modeline--icon-file-default))))
     (if default-f
         (or icon-m icon-f)
@@ -328,7 +338,9 @@ Position argument ARG0."
 (defun jcs-modeline--render-modes ()
   "Render line modes."
   (let* ((icon (and jcs-modeline-show-mode-icons
-                    (when-let* ((icon (jcs-modeline--icon-for-buffer))
+                    (when-let* ((icon (jcs-modeline--icon-for-buffer
+                                       :height jcs-modeline-icon-scale-factor
+                                       :v-adjust jcs-modeline-icon-v-adjust))
                                 (icon (if (or (null icon) (symbolp icon))
                                           (jcs-modeline--icon-file-default)
                                         icon))
