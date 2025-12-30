@@ -8,7 +8,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## 0.2.1 (Unreleased)
 > Released N/A
 
-* N/A
+* feat: Add custom variables for icon adjustment ([`bf7a134`](../../commit/bf7a134cfd8e94fdf0e271b0d2b576349e00b024))
 
 ## 0.2.0
 > Released Dec 30, 2025
