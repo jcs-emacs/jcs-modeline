@@ -327,7 +327,7 @@ Position argument ARG0."
   (nerd-icons-faicon "nf-fa-file_o"))
 
 (defun jcs-modeline--icon-for-buffer (&rest args)
-  "Return icon for buffer."
+  "Return icon for buffer with ARGS."
   (let* ((icon-f (ignore-errors (apply #'nerd-icons-icon-for-file (buffer-file-name) args)))
          (icon-m (ignore-errors (apply #'nerd-icons-icon-for-mode major-mode args)))
          (default-f (equal icon-f (jcs-modeline--icon-file-default))))
