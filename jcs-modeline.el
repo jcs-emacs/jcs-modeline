@@ -296,8 +296,12 @@ Position argument ARG0."
 
 (defun jcs-modeline--render-mode-line-process ()
   "Render `mode-line-process'."
-  (when mode-line-process
-    (concat " " (jcs-modeline-format mode-line-process))))
+  (when-let* ((mode-line-process)
+              (ind (jcs-modeline-format mode-line-process)))
+    (concat " "
+            (propertize ind
+                        'mouse-face 'mode-line-highlight
+                        'help-echo (elenv-2str (pp-to-string mode-line-process))))))
 
 ;;
 ;;; Modes
