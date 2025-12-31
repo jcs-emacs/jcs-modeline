@@ -9,6 +9,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 > Released N/A
 
 * feat: Add custom variables for icon adjustment ([`bf7a134`](../../commit/bf7a134cfd8e94fdf0e271b0d2b576349e00b024))
+* feat: Add help echo for mode line process ([`8ede8ab`](../../commit/8ede8ab6a994a5d0d84706b9a738e409c65feac2))
 
 ## 0.2.0
 > Released Dec 30, 2025
