@@ -5,11 +5,12 @@ All notable changes to this project will be documented in this file.
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 
-## 0.2.1 (Unreleased)
+## 0.3.0 (Unreleased)
 > Released N/A
 
 * feat: Add custom variables for icon adjustment ([`bf7a134`](../../commit/bf7a134cfd8e94fdf0e271b0d2b576349e00b024))
 * feat: Add help echo for mode line process ([`8ede8ab`](../../commit/8ede8ab6a994a5d0d84706b9a738e409c65feac2))
+* feat: Add moody separators ([`7a7306a`](../../commit/7a7306ad9b6b3b3447f363a51f7b82d4b56ec858))
 
 ## 0.2.0
 > Released Dec 30, 2025
