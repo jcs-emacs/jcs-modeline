@@ -49,7 +49,7 @@
   `((:eval (jcs-modeline--render-front-spaces))
     (:eval (jcs-modeline--render-buffer-identification))
     (:eval (jcs-modeline--render-modes))
-    (:eval (moody-tab (jcs-modeline--render-vc-project)))
+    (:eval (moody-ribbon (jcs-modeline--render-vc-project)))
     (:eval (jcs-modeline--render-read-only))
     (:eval (jcs-modeline--render-mode-line-process)))
   "List of item to render on the left."
@@ -65,7 +65,7 @@
     (:eval (jcs-modeline--render-undo-tree-buffer-name))
     (:eval (jcs-modeline--render-undo-tree-status))
     (:eval (jcs-modeline--render-vc-info))
-    (:eval (moody-tab (jcs-modeline--render-line-columns) 0 'up))
+    (:eval (moody-ribbon (jcs-modeline--render-line-columns) 0 'up))
     (:eval (jcs-modeline--render-percent-position))
     (:eval (jcs-modeline--render-end-spaces)))
   "List of item to render on the right."
@@ -126,7 +126,7 @@
 (defun jcs-modeline--enable ()
   "Enable function `jcs-modeline-mode'."
   (unless elenv-graphic-p
-    (advice-add 'moody-tab :override #'jcs-modeline--moody-tab))
+    (advice-add 'moody-wrap :override #'jcs-modeline--moody-wrap))
   (add-hook 'window-size-change-functions #'jcs-modeline--window-resize)
   (jcs-modeline--window-resize)  ; call it manually once
   (setq jcs-modeline--default-mode-line mode-line-format)
@@ -138,7 +138,7 @@
 (defun jcs-modeline--disable ()
   "Disable function `jcs-modeline-mode'."
   (unless elenv-graphic-p
-    (advice-remove 'moody-tab #'jcs-modeline--moody-tab))
+    (advice-remove 'moody-wrap #'jcs-modeline--moody-wrap))
   (remove-hook 'window-size-change-functions #'jcs-modeline--window-resize)
   (setq-default mode-line-format jcs-modeline--default-mode-line))
 
@@ -193,8 +193,8 @@ Arguments FORMAT, FACE, WINDOW and BUFFER are parameters from the
 `format-mode-line' function."
   (string-trim (format-mode-line format face window buffer)))
 
-(defun jcs-modeline--moody-tab (arg0 &rest _)
-  "Override the function `moody-tab' when inside the terminal.
+(defun jcs-modeline--moody-wrap (arg0 &rest _)
+  "Override the function `moody-wrap' when inside the terminal.
 
 Position argument ARG0."
   (concat " " arg0 " "))
@@ -355,7 +355,10 @@ Position argument ARG0."
                           (jcs-modeline-format mode-name)))
          (lst (cl-remove-if #'null (list icon line-modes)))
          (ind (mapconcat #'identity lst " ")))
-    (concat (propertize ind
+    (concat (if (bound-and-true-p centaur-tabs-mode)
+                ""
+              " ")
+            (propertize ind
                         'mouse-face 'mode-line-highlight
                         'help-echo "Major and minor modes
 mouse-1: Toggle display of major mode name"
@@ -779,6 +782,81 @@ BC : border color."
        '("#CCCCCC" "#B100EB") '("#CCCCCC" "#650286") "#B100EB")
     (jcs-modeline--set-theme
      '("#CCCCCC" "#B100EB") '("#CCCCCC" "#650286") "#B100EB")))
+
+;;
+;; (@* "Separator" )
+;;
+
+(defun jcs-modeline-moody-arrow (direction c1 c2 c3 &optional height)
+  (unless height
+    (setq height (or (if (functionp moody-mode-line-height)
+                         (funcall moody-mode-line-height)
+                       moody-mode-line-height)
+                     (window-mode-line-height))))
+  (setq height (* height moody-display-scale))
+  (unless (cl-evenp height) (cl-incf height))
+  (let ((key (list direction c1 c2 c3 height 'arrow-point)))
+    (or (cdr (assoc key moody--cache))
+        (let* ((width (/ height 3))
+               (half-height (/ height 2.0))
+               (image
+                (create-image
+                 (format "/* XPM */ static char * image[] = {
+ \"%s %s 3 1\",\n \"0 c %s\",\n \"1 c %s\",\n \"2 c %s\",%s\n};"
+                         width height c1 c2 c3
+                         (cl-loop
+                          for i from 0 below height concat
+                          (format " \"%s\",\n"
+                                  (let* ((x (round (- width (* width (/ (abs (- i half-height)) half-height)))))
+                                         (a (make-string (max 0 x) ?0))
+                                         (b (make-string 1 ?1))
+                                         (c (make-string (max 0 (- width x 1)) ?2)))
+                                    (if (eq direction 'down)
+                                        (concat a b c)
+                                      (concat (reverse c) b (reverse a)))))))
+                 'xpm t :scale (/ 1.0 moody-display-scale) :ascent 'center)))
+          (push (cons key image) moody--cache)
+          image))))
+
+(defun jcs-modeline-moody-wave (direction c1 c2 c3 &optional height)
+  (unless height
+    (setq height (or (if (functionp moody-mode-line-height)
+                         (funcall moody-mode-line-height)
+                       moody-mode-line-height)
+                     (window-mode-line-height))))
+  (setq height (* height moody-display-scale))
+  (unless (cl-evenp height) (cl-incf height))
+  (let ((key (list direction c1 c2 c3 height 'sin-wave)))
+    (or (cdr (assoc key moody--cache))
+        (let* ((width (/ height 3))
+               (image
+                (create-image
+                 (format
+                  "/* XPM */ static char * image[] = {
+ \"%s %s 3 1\",
+ \"0 c %s\",
+ \"1 c %s\",
+ \"2 c %s\",%s
+};"
+                  width height c1 c2 c3
+                  (cl-loop
+                   for i from 0 below height concat
+                   (format " \"%s\",\n"
+                           (let* ((v (/ i (float (1- height))))
+                                  (f (cos (* 2.0 v)))
+                                  ;;(x (round (* f (1- width))))
+                                  (x (round (- (1- width) (* f (1- width)))))
+                                  (a (make-string (max 0 x) ?0))
+                                  (b (make-string 1 ?1))
+                                  (c (make-string (max 0 (- width x 1)) ?2)))
+                             (if (eq direction 'down)
+                                 (concat a b c)
+                               (concat (reverse c) b (reverse a)))))))
+                 'xpm t
+                 :scale (/ 1.0 moody-display-scale)
+                 :ascent 'center)))
+          (push (cons key image) moody--cache)
+          image))))
 
 (provide 'jcs-modeline)
 ;;; jcs-modeline.el ends here
