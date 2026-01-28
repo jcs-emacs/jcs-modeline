@@ -6,7 +6,10 @@
 ;; Maintainer: Shen, Jen-Chieh <jcs090218@gmail.com>
 ;; URL: https://github.com/jcs-emacs/jcs-modeline
 ;; Version: 0.2.0
-;; Package-Requires: ((emacs "29.1") (moody "0.7.1") (minions "0.3.7") (elenv "0.1.0") (nerd-icons "0.0.1") (reveal-in-folder "0.1.2"))
+;; Package-Requires: ((emacs "29.1")
+;;                    (moody "0.7.1") (minions "0.3.7") (elenv "0.1.0")
+;;                    (nerd-icons "0.0.1") (reveal-in-folder "0.1.2")
+;;                    (goto-line-preview "0.1.0") (goto-char-preview "0.1.0"))
 ;; Keywords: faces mode-line
 
 ;; This file is not part of GNU Emacs.
@@ -199,16 +202,19 @@ Arguments FORMAT, FACE, WINDOW and BUFFER are parameters from the
 Position argument ARG0."
   (concat " " arg0 " "))
 
-(defmacro jcs-modeline--with-mouse-click (&rest body)
+(defun jcs-modeline--keymap-mouse-1 (def)
+  "Return the mode-line keymap with bindings DEF key."
+  (let ((map (make-sparse-keymap)))
+    (define-key map (vector 'mode-line 'mouse-1) def)
+    map))
+
+(defmacro jcs-modeline--with-mouse-1 (&rest body)
   "Execute BODY with in the mouse click event."
   (declare (indent 0))
-  `(let ((map (make-sparse-keymap)))
-     (define-key map (vector 'mode-line 'mouse-1)
-                 (lambda (&rest _)
-                   (interactive)
-                   (call-interactively #'mouse-select-window)
-                   ,@body))
-     map))
+  `(jcs-modeline--keymap-mouse-1 (lambda (&rest _)
+                                   (interactive)
+                                   (call-interactively #'mouse-select-window)
+                                   ,@body)))
 
 ;;
 ;; (@* "Core" )
@@ -362,7 +368,7 @@ Position argument ARG0."
                         'mouse-face 'mode-line-highlight
                         'help-echo "Major and minor modes
 mouse-1: Toggle display of major mode name"
-                        'local-map (jcs-modeline--with-mouse-click
+                        'local-map (jcs-modeline--with-mouse-1
                                      (setq jcs-modeline-show-mode-name
                                            (not jcs-modeline-show-mode-name))
                                      (force-mode-line-update t)))
@@ -380,15 +386,25 @@ mouse-1: Toggle display of major mode name"
   "Render current line number and column."
   (let* ((ind-line (propertize (jcs-modeline-format "%l")
                                'mouse-face 'mode-line-highlight
-                               'help-echo "Line"))
+                               'help-echo "Goto Line"
+                               'local-map
+                               (jcs-modeline--with-mouse-1
+                                 (call-interactively #'goto-line-preview))))
          (ind-column (propertize (jcs-modeline-format "%c")
                                  'mouse-face 'mode-line-highlight
-                                 'help-echo "Column"))
-         (ind-point (concat "("
-                            (propertize (elenv-2str (point))
-                                        'mouse-face 'mode-line-highlight
-                                        'help-echo "Point")
-                            ")"))
+                                 'help-echo "Move to Column"
+                                 'local-map
+                                 (jcs-modeline--with-mouse-1
+                                   (call-interactively #'move-to-column))))
+         (ind-point (concat
+                     "("
+                     (propertize (elenv-2str (point))
+                                 'mouse-face 'mode-line-highlight
+                                 'help-echo "Move to Character"
+                                 'local-map
+                                 (jcs-modeline--with-mouse-1
+                                   (call-interactively #'goto-char-preview)))
+                     ")"))
          (lst (if jcs-modeline-show-point
                   (list ind-line ind-column ind-point)
                 (list ind-line ind-column))))
@@ -431,14 +447,14 @@ mouse-1: Toggle display of major mode name"
                    'help-echo (format "Project Name
 path: %s
 mouse-1: Reveal project in folder" project)
-                   'local-map (jcs-modeline--with-mouse-click
+                   'local-map (jcs-modeline--with-mouse-1
                                 (reveal-in-folder-open project))))
     (propertize jcs-modeline-project-indicator
                 'mouse-face 'mode-line-highlight
                 'help-echo "Project Name
 
 mouse-1: Switch project"
-                'local-map (jcs-modeline--with-mouse-click
+                'local-map (jcs-modeline--with-mouse-1
                              (call-interactively #'project-switch-project)))))
 
 ;;
@@ -489,7 +505,7 @@ mouse-1: Switch project"
     (concat (propertize backend-icon
                         'mouse-face 'mode-line-highlight
                         'help-echo tip
-                        'local-map (jcs-modeline--with-mouse-click
+                        'local-map (jcs-modeline--with-mouse-1
                                      (call-interactively #'#'magit-branch-checkout)))
             (propertize (concat
                          separator
@@ -497,7 +513,7 @@ mouse-1: Switch project"
                         'face 'jcs-modeline-vc-face
                         'mouse-face 'mode-line-highlight
                         'help-echo tip
-                        'local-map (jcs-modeline--with-mouse-click
+                        'local-map (jcs-modeline--with-mouse-1
                                      (call-interactively #'magit-branch-checkout)))
             " ")))
 
@@ -515,7 +531,7 @@ mouse-1: Switch project"
                       'mouse-face 'mode-line-highlight
                       'help-echo (format "Buffer read-only: %s"
                                          (if buffer-read-only "ON" "OFF"))
-                      'local-map (jcs-modeline--with-mouse-click
+                      'local-map (jcs-modeline--with-mouse-1
                                    (call-interactively #'read-only-mode)))))
 
 ;;
@@ -639,7 +655,7 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
          (propertize result
                      'mouse-face 'mode-line-highlight
                      'help-echo "flymake"
-                     'local-map (jcs-modeline--with-mouse-click
+                     'local-map (jcs-modeline--with-mouse-1
                                   (flymake-goto-next-error))))
        " "))))
 
@@ -671,7 +687,7 @@ If argument RUNNING is non-nil, we turn lighter into question mark."
        (propertize result
                    'mouse-face 'mode-line-highlight
                    'help-echo "flycheck"
-                   'local-map (jcs-modeline--with-mouse-click
+                   'local-map (jcs-modeline--with-mouse-1
                                 (flycheck-next-error))))
      " ")))
 
