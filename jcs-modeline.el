@@ -332,30 +332,45 @@ Position argument ARG0."
   :type 'number
   :group 'jcs-modeline)
 
-(defun jcs-modeline--icon-file-default ()
-  "Return the default file icon."
-  (nerd-icons-faicon "nf-fa-file_o"))
+;; Copied from https://github.com/emacsattic/helm-mode-manager/blob/master/helm-mode-manager.el#L84
+(defun jcs-modeline--major-modes ()
+  "Returns list of potential major mode names.
 
-(defun jcs-modeline--icon-for-buffer (&rest args)
-  "Return icon for buffer with ARGS."
-  (let* ((icon-f (ignore-errors (apply #'nerd-icons-icon-for-file (buffer-file-name) args)))
-         (icon-m (ignore-errors (apply #'nerd-icons-icon-for-mode major-mode args)))
-         (default-f (equal icon-f (jcs-modeline--icon-file-default))))
-    (if default-f
-        (or icon-m icon-f)
-      (or icon-f icon-m))))
+From Tobias Zawada (http://stackoverflow.com/a/19165202)."
+  (interactive)
+  (let (l)
+    (mapatoms #'(lambda (f) (and
+                             (commandp f)
+                             (string-match "-mode$" (symbol-name f))
+                             ;; auto-loaded
+                             (or (and (autoloadp (symbol-function f))
+                                      (let ((doc (documentation f)))
+                                        (when doc
+                                          (and
+                                           (let ((docSplit (help-split-fundoc doc f)))
+                                             (and docSplit ;; car is argument list
+                                                  (null (cdr (read (car docSplit)))))) ;; major mode starters have no arguments
+                                           (if (string-match "[mM]inor" doc) ;; If the doc contains "minor"...
+                                               (string-match "[mM]ajor" doc) ;; it should also contain "major".
+                                             t) ;; else we cannot decide therefrom
+                                           ))))
+                                 (null (help-function-arglist f)))
+                             (setq l (cons (symbol-name f) l)))))
+    l))
 
 (defun jcs-modeline--render-modes ()
   "Render line modes."
   (let* ((icon (and jcs-modeline-show-mode-icons
-                    (when-let* ((icon (jcs-modeline--icon-for-buffer
-                                       :height jcs-modeline-icon-scale-factor
-                                       :v-adjust jcs-modeline-icon-v-adjust))
-                                (icon (if (or (null icon) (symbolp icon))
-                                          (jcs-modeline--icon-file-default)
-                                        icon))
-                                ((jcs-modeline--char-displayable-p icon)))
-                      icon)))
+                    (let* ((icon (nerd-icons-icon-for-mode
+                                  major-mode
+                                  :height jcs-modeline-icon-scale-factor
+                                  :v-adjust jcs-modeline-icon-v-adjust))
+                           (icon (if (or (null icon) (symbolp icon))
+                                     nil
+                                   icon)))
+                      (when (and icon
+                                 (jcs-modeline--char-displayable-p icon))
+                        icon))))
          (line-modes (and (or jcs-modeline-show-mode-name
                               (null icon))
                           (jcs-modeline-format mode-name)))
@@ -369,9 +384,10 @@ Position argument ARG0."
                         'help-echo "Major and minor modes
 mouse-1: Toggle display of major mode name"
                         'local-map (jcs-modeline--with-mouse-1
-                                     (setq jcs-modeline-show-mode-name
-                                           (not jcs-modeline-show-mode-name))
-                                     (force-mode-line-update t)))
+                                     (let ((new-mode (completing-read "Select major mode: "
+                                                                      (jcs-modeline--major-modes)
+                                                                      nil t)))
+                                       (funcall (intern new-mode)))))
             " ")))
 
 ;;
