@@ -819,6 +819,14 @@ BC : border color."
 ;; (@* "Separator" )
 ;;
 
+(defconst jcs-modeline--xpm-format "/* XPM */ static char * image[] = {
+ \"%s %s 3 1\",
+ \"0 c %s\",
+ \"1 c %s\",
+ \"2 c %s\",%s
+};"
+  "The XPM image format.")
+
 (defun jcs-modeline-moody-arrow (direction c1 c2 c3 &optional height)
   (unless height
     (setq height (or (if (functionp moody-mode-line-height)
@@ -829,24 +837,25 @@ BC : border color."
   (unless (cl-evenp height) (cl-incf height))
   (let ((key (list direction c1 c2 c3 height 'arrow-point)))
     (or (cdr (assoc key moody--cache))
-        (let* ((width (/ height 3))
-               (half-height (/ height 2.0))
-               (image
-                (create-image
-                 (format "/* XPM */ static char * image[] = {
- \"%s %s 3 1\",\n \"0 c %s\",\n \"1 c %s\",\n \"2 c %s\",%s\n};"
-                         width height c1 c2 c3
-                         (cl-loop
-                          for i from 0 below height concat
-                          (format " \"%s\",\n"
-                                  (let* ((x (round (- width (* width (/ (abs (- i half-height)) half-height)))))
-                                         (a (make-string (max 0 x) ?0))
-                                         (b (make-string 1 ?1))
-                                         (c (make-string (max 0 (- width x 1)) ?2)))
-                                    (if (eq direction 'down)
-                                        (concat a b c)
-                                      (concat (reverse c) b (reverse a)))))))
-                 'xpm t :scale (/ 1.0 moody-display-scale) :ascent 'center)))
+        (when-let*
+            ((width (/ height 3))
+             (half-height (/ height 2.0))
+             ((not (zerop half-height)))
+             (image
+              (create-image
+               (format jcs-modeline--xpm-format
+                       width height c1 c2 c3
+                       (cl-loop
+                        for i from 0 below height concat
+                        (format " \"%s\",\n"
+                                (let* ((x (round (- width (* width (/ (abs (- i half-height)) half-height)))))
+                                       (a (make-string (max 0 x) ?0))
+                                       (b (make-string 1 ?1))
+                                       (c (make-string (max 0 (- width x 1)) ?2)))
+                                  (if (eq direction 'down)
+                                      (concat a b c)
+                                    (concat (reverse c) b (reverse a)))))))
+               'xpm t :scale (/ 1.0 moody-display-scale) :ascent 'center)))
           (push (cons key image) moody--cache)
           image))))
 
@@ -864,12 +873,7 @@ BC : border color."
                (image
                 (create-image
                  (format
-                  "/* XPM */ static char * image[] = {
- \"%s %s 3 1\",
- \"0 c %s\",
- \"1 c %s\",
- \"2 c %s\",%s
-};"
+                  jcs-modeline--xpm-format
                   width height c1 c2 c3
                   (cl-loop
                    for i from 0 below height concat
