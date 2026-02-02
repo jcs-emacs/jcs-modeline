@@ -334,7 +334,7 @@ Position argument ARG0."
 
 ;; Copied from https://github.com/emacsattic/helm-mode-manager/blob/master/helm-mode-manager.el#L84
 (defun jcs-modeline--major-modes ()
-  "Returns list of potential major mode names.
+  "Return list of potential major mode names.
 
 From Tobias Zawada (http://stackoverflow.com/a/19165202)."
   (interactive)
@@ -828,6 +828,7 @@ BC : border color."
   "The XPM image format.")
 
 (defun jcs-modeline-moody-arrow (direction c1 c2 c3 &optional height)
+  "Separator, arrow."
   (unless height
     (setq height (or (if (functionp moody-mode-line-height)
                          (funcall moody-mode-line-height)
@@ -860,6 +861,7 @@ BC : border color."
           image))))
 
 (defun jcs-modeline-moody-wave (direction c1 c2 c3 &optional height)
+  "Separator, wave."
   (unless height
     (setq height (or (if (functionp moody-mode-line-height)
                          (funcall moody-mode-line-height)
