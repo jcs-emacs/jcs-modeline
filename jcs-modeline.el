@@ -120,6 +120,7 @@
 ;; (@* "Entry" )
 ;;
 
+;; The actual render items reflect the responsive window.
 (defvar jcs-modeline--render-left nil)
 (defvar jcs-modeline--render-right nil)
 
