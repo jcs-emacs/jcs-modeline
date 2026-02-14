@@ -133,9 +133,9 @@
   (add-hook 'window-size-change-functions #'jcs-modeline--window-resize)
   (jcs-modeline--window-resize)  ; call it manually once
   (setq jcs-modeline--default-mode-line mode-line-format)
-  (setq-default mode-line-format
-                '((:eval (jcs-modeline-render jcs-modeline--render-left
-                                              jcs-modeline--render-right))))
+  (setq-default mode-line-format '((:eval jcs-modeline--render-left)
+                                   mode-line-format-right-align
+                                   (:eval jcs-modeline--render-right)))
   (minions-mode 1))
 
 (defun jcs-modeline--disable ()
@@ -256,26 +256,6 @@ Position argument ARG0."
         ;; Since we iterate it from the edge, we don't need to reverse the right
         jcs-modeline--render-right jcs-modeline--render-right))
 
-(defun jcs-modeline--adjust-pad ()
-  "Adjust padding for external packages."
-  (let ((delta 0))
-    (when vertical-scroll-bar
-      (when-let* ((data (window-scroll-bars))
-                  (shown (nth 2 data))
-                  (width (nth 1 data)))
-        (setq delta (+ delta width))))
-    delta))
-
-(defun jcs-modeline-render (left right)
-  "Render mode line with LEFT and RIGHT alignment."
-  (let* ((len-left (jcs-modeline--str-width (format-mode-line left)))
-         (len-right (jcs-modeline--str-width (format-mode-line right)))
-         (available-width (- (window-width) (+ len-left len-right)))
-         (available-width (+ available-width (jcs-modeline--adjust-pad))))
-    (append left
-            (list (format (format "%%%ds" available-width) ""))
-            right)))
-
 ;;
 ;; (@* "Padding" )
 ;;
@@ -298,7 +278,8 @@ Position argument ARG0."
 (defun jcs-modeline--render-buffer-identification ()
   "Render buffer identification."
   (unless (bound-and-true-p centaur-tabs-mode)
-    (moody-tab (jcs-modeline-format mode-line-buffer-identification))))
+    (concat (jcs-modeline-format mode-line-buffer-identification)
+            " ")))
 
 (defun jcs-modeline--render-mode-line-process ()
   "Render `mode-line-process'."
