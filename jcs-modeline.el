@@ -267,7 +267,11 @@ Position argument ARG0."
 
 (defun jcs-modeline--render-end-spaces ()
   "Return the end spaces."
-  (unless elenv-graphic-p "  "))
+  (cond (elenv-graphic-p
+         (if (car (window-current-scroll-bars))
+             " "
+           "  "))
+        (t "   ")))
 
 ;;
 ;; (@* "Plugins" )
